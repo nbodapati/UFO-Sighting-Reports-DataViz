@@ -1,0 +1,735 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+
+<body style="background:darkgrey">
+<div id="Parent">
+
+<div id="slopegraph2" style="background:darkgrey; position:absolute; top:100px; left:10px;">
+<div id="sg-text">
+<p class="sidetext" style="top:150px;left:10px">Start Year mustbe less than End year for the above slopegraph.For the parallel coordinates, the options are 
+Year,Country,Month</p>
+</div>
+<div class="selectmenu_start" ></div>
+<div class="selectmenu_end"></div>
+</div>
+
+<div id="pcoordinates" style="background:darkgrey; position:absolute; top:300px; left:10px;">
+<div id="example" class="parcoords"style=" background:darkgrey; width:960px;height:400px;">
+<div class="pcoord-title"></div>
+<div class="selectmenu_year"></div>
+<div class="selectmenu_country"></div>
+<div class="selectmenu_time"></div>
+</div>
+</div>
+
+</div>
+
+<style>
+.pool {
+    fill: #3db1ff;
+    stroke: #4f4f4f;
+}
+</style>
+
+<style>
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.box {
+  font: 10px sans-serif;
+}
+
+.box line,
+.box rect,
+.box circle {
+  fill: steelblue;
+  stroke: #000;
+  stroke-width: 1px;
+}
+
+.box .center {
+  stroke-dasharray: 3,3;
+}
+
+.box .outlier {
+  fill: none;
+  stroke: #000;
+}
+
+.axis {
+  font: 12px sans-serif;
+}
+ 
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+ 
+.xaxis path { 
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+</style>
+
+
+<style type='text/css'>
+        line.slope-line{
+            stroke:green
+        }
+        text.slope-label{
+            fill:blue;
+            font: 15px Arial;
+        }
+    </style>
+	
+<style>
+.button text {
+  font-size: 20px;
+  fill: #eee;
+  pointer-events: none;
+  text-anchor: middle;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
+
+div.tooltip {	
+    position: absolute;			
+    text-align: center;			
+    width: 120px;					
+    height: 50px;					
+    padding: 2px;				
+    font: 12px sans-serif;		
+    background: lightgreen;	
+    border: 0px;		
+    border-radius: 8px;			
+    pointer-events: none;			
+}
+
+div.absolute1 {
+    position: absolute;
+    top: 10px;
+    right: 650px;
+    width: 100px;
+    height: 20px;
+    border: 3px solid #73AD21;
+}
+
+.absolute2 {
+    position: absolute;
+    top: 50px;
+    right: 850px;
+    
+}
+</style>
+
+<style>
+    body   { color: #444; background: #f3f3f3; font: normal 12px "Adobe Garamond Pro", "Palatino", serif; margin: 2em; }
+    header { margin: 0 0 20px 220px; border-bottom: 1px solid #6c6c6c; width: 360px; position: relative; }
+    h1     { font-size: 16px; font-weight: normal; text-shadow: #fff 0 1px 0; margin: 0 0 0 0; padding: 0; }
+    small  { color: #a3a3a3; font-size: 10px; position: absolute; top: 0.6em; right: 0;}
+    a      { color: #a3a3a3; }
+    text.label { fill: #444; }
+    text.label.start { text-anchor: end; }
+    line.slope { stroke: #444; stroke-width: 1; }
+    .missing text.label { display: none; }
+    .missing line.slope { display: none; }
+    .over text.label { fill: #bb2629; font-size: 14px !important; font-weight: bold; }
+    .over line.slope { stroke: #bb2629; stroke-width: 2; }
+  </style>
+
+<script type="text/javascript" src="http://mbostock.github.com/d3/d3.js"></script>
+<script>
+var d3_2=d3;
+</script>
+
+ 
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+<script>
+var new_d3=d3;
+</script>
+
+<script type="text/javascript" src="http://mbostock.github.com/d3/d3.js"></script>
+<script>
+var d3_2=d3;
+</script>
+
+
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script>
+var old_d3=d3;
+</script>
+
+
+<script src="http://code.jquery.com/jquery-2.1.4.min.js" charset="utf-8"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+<script src="https://dc-js.github.io/dc.js/js/crossfilter.js"></script>
+<script src="https://dc-js.github.io/dc.js/js/dc.js"></script>
+ <script type='text/javascript' src="./js/slopegraph.js"></script>
+ <script type='text/javascript' src="./js/d3.parcoords.js"></script>
+ <script src="./js/d3.svg.multibrush.js"></script>
+ <script src="./js/box.js"></script>
+ <script src="./js/circularHeatChart.js"></script>
+ 
+ <script src="//cdnjs.cloudflare.com/ajax/libs/topojson/1.6.9/topojson.min.js"></script>
+
+<script src="./js/datamaps.world.min.js"></script>
+<script src="node_modules/datamaps/dist/datamaps.world.min.js"></script>
+<script src="node_modules/datamaps/dist/datamaps.usa.min.js"></script>
+ 
+ <link rel="stylesheet" type="text/css" href="./js/d3.parcoords.css">
+ <link rel="stylesheet" type="text/css" href="./js/style.css">
+ <link rel="stylesheet" type="text/css" href="./js/sequences.css"/>
+  
+<a href="" class="next" style="position:absolute; top:200px; left:1200px;"><span style="font-size:15px;color:pink">Next</span></a>
+<a href="" class="prev" style="position:absolute; top:250px; left:1200px;"><span style="font-size:15px;color:pink">Previous</span></a>
+
+
+<style>
+p.sidetext{
+position:absolute;
+color:brown;
+font-size: 15px;
+font-family:courier;
+}
+node-text {
+  font: 24px "Helvetica Neue", Helvetica, Arial, sans-serif;
+  text-anchor: middle;
+  pointer-events: none;
+}
+
+node-circle {
+  fill: #ccc;
+}
+
+.node:hover circle {
+  fill: orange;
+}
+.next{
+position: absolute;			
+    text-align: center;			
+    width: 60px;					
+    height: 20px;
+    padding: 2px;				
+    font: 12px sans-serif;		
+    background:darkgreen;	
+    border: 0px;		
+    border-radius: 8px;			
+    pointer-events: cursor;
+}
+
+.prev{
+position: absolute;			
+    text-align: center;			
+    width: 60px;					
+    height: 20px;
+    padding: 2px;				
+    font: 12px sans-serif;		
+    background:darkgreen;	
+    border: 0px;		
+    border-radius: 8px;			
+    pointer-events: cursor;
+}
+ </style>
+ 
+ <style>
+      .heat-box {
+        stroke: #E6E6E6;
+        stroke-width: 2px;
+      }
+    </style>
+ 
+<script type="text/javascript">
+
+$( document ).ready(function() {
+    var caseList = [
+    'index.html',
+	'index1.html',
+	'index2.html',
+	'index3.html',
+	'index4.html',
+	'index5.html'
+];
+
+    current=$(location).attr('pathname')
+	         .substr($(location).attr('pathname')
+			 .lastIndexOf("/")+1); // get current page: just last part - page name and extension
+   
+    if(current=="")
+	   current="index.html";
+	   
+	console.log(current);
+    if($.inArray(current, caseList)!==-1) { //check if it is in array
+        index=$.inArray(current, caseList);
+    }
+    //navigate thorough pages...
+    $( ".next" ).click(function() {
+    if(index<caseList.length){
+    var n=caseList[index+1];
+	d3.select(".next").attr("href",n);
+
+    }
+    });
+
+    $( ".prev" ).click(function() {
+    if(index>=0){
+    var p=caseList[index-1];
+    d3.select(".prev").attr("href",p);
+    }
+    });
+
+    });
+
+ var d3=old_d3;
+ //console.log(JSON.stringify(new_d3));
+ var years_list;
+ var d3_1=new_d3;
+ 
+ function rangefn(start, stop, step){
+  var a=[start], b=start;
+  while(b<stop){b+=step;a.push(b)}
+  return a;
+};
+var div1 = d3.select("#Parent").append("div")	
+              .attr("class", "tooltip")				
+              .style("opacity", 0);
+			  
+//////////////////////////////////////////////////////////////////////////////////////
+//Slopegraph2
+   $.ajax({
+url:'http://128.119.243.147:3300/UFOreports',
+    type: "GET",
+    dataType: 'json',
+   success: function(data,err) {
+           var years_list=data;
+		   years_list.sort(function(a, b) {
+             return parseFloat(a) - parseFloat(b);});
+			 
+		   
+ var sel_start=d3.select(".selectmenu_start")
+            .append("select")
+            .attr("class","sel")
+	     	.on("change",onchange_start);
+              		
+   var options_start = sel_start.selectAll(".option")
+	            .data(years_list).enter()
+	            .append("option")
+				.attr("class","option")
+	            .text(function (d) { return d; });
+				
+var sel_end=d3.select(".selectmenu_end")
+            .append("select")
+            .attr("class","sel")
+	     	.on("change",onchange_end);
+              		
+   var options_end = sel_end.selectAll(".option")
+	            .data(years_list).enter()
+	            .append("option")
+				.attr("class","option")
+	            .text(function (d) { return d; });
+                   
+var years_sel={};
+years_sel.start=1910;
+years_sel.end=2014;
+				
+function onchange_start(){
+   var selectedIndex = sel_start.property('selectedIndex'),
+       selected_data          = options_start[0][selectedIndex].__data__;
+   console.log(selected_data);
+   years_sel.start=selected_data;
+   
+   d3.select("#slopegraph2").select(".sg-chart").remove();
+ 
+  if(years_sel.start< years_sel.end)
+  {
+   
+    getStats_SG2(years_sel.start,years_sel.end);
+   }
+ }	   
+ 
+ function onchange_end(){
+   var selectedIndex = sel_end.property('selectedIndex'),
+       selected_data2          = options_end[0][selectedIndex].__data__;
+   console.log(selected_data2);
+  years_sel.end=selected_data2;
+  
+  d3.select("#slopegraph2").select(".sg-chart").remove();
+   
+  if(years_sel.start< years_sel.end)
+  {
+  
+    getStats_SG2(years_sel.start,years_sel.end);
+   }
+ }
+ 
+}
+});
+ 
+ 
+ 
+function getStats_SG2(year1,year2){
+   $.ajax({
+url:'http://128.119.243.147:3300/UFOreports',
+    type: "GET",
+    dataType: 'json',
+   success: function(data,err) {
+           var years_list=data;
+		   
+	     var data = {};	
+                 //  	data.number=num;
+				 data.y1=year1;
+				 data.y2-year2;
+				 
+					$.ajax({
+						type: 'POST',
+						data: (data),
+				        contentType: 'application/json',
+ 			  headers: {
+			  'Content-Type': 'application/x-www-form-urlencoded',
+                          },
+                        url: 'http://128.119.243.147:3300/UFOreports_slopegraph2',						
+                        success: function(resp) {
+                            console.log('success');					
+				draw_slopegraph2_chart(resp,year1,year2);						
+							
+                        }
+                    });    	  
+	  }
+        })
+}	  
+ 
+ 
+ getStats_SG2(1910,2012);
+
+ function draw_slopegraph2_chart(csv,year1,year2)
+ {
+ var countries=["ca","us","gb","au"];
+
+  var data      = csv
+                      .map( function(d) {
+					    if(d[year1.toString()] == null)
+						  d[year1.toString()]=0;
+						if(d[year2.toString()] == null)
+						  d[year2.toString()]=0; 
+						  
+                        var r = {
+                          label: d.Country,
+                          start:+d[year1.toString()],
+                          end:   +d[year2.toString()]
+						  
+                        };
+                     
+                        return r;
+                      });
+					  
+					  var start=year1;var end=year2;
+ 
+  var  values    = data
+                      .map( function(d) { return d3.round(d.start, 1); })
+                      .filter( function(d) { return d; } )
+                      .concat(
+                        data
+                          .map( function(d) { return d3.round(d.end, 1); } )
+                          .filter( function(d) { return d; } )
+                      )
+                      .sort()
+                      .reverse(),
+        // Return true for countries without start/end values
+        missing   = function(d) { return !d.start || !d.end; },
+        // Format values for labels
+        label_format = function(value) { return d3.format(".1f")(d3.round(value, 1)); },
+        font_size = 12,
+        margin    = 20,
+        width     = 800,
+        height    = countries.length * font_size*1.5 + margin,
+        chart     = d3.select("#slopegraph2").append("svg")
+                   .attr("width",  width)
+                   .attr("height", height)
+				   .attr("class","sg-chart");
+				   
+				   console.log(JSON.stringify(data));
+				   
+				   var slope = d3.scale.ordinal()
+                  .domain(values)
+                  .rangePoints([margin, height]);
+    
+    // Countries
+    var country = chart.selectAll("g.country")
+                    .data( data )
+                    .enter()
+                    .append("g")
+                    .attr("class", "country")
+                    //.classed("missing", function(d) { return missing(d); });
+    country
+      .on("mouseover", function(d,i) { return d3.select(this).classed("over", true); })
+      .on("mouseout",  function(d,i) { return d3.select(this).classed("over", false); });
+    // ** Left column
+    country
+      .append("text")
+      .classed("label start", true)
+      .attr("x", 200)
+      .attr("y", function(d,i) { var rounded = d3.round(d.start, 1); return slope(rounded) })
+      .attr("xml:space", "preserve")
+      .style("font-size", font_size)
+      .text(function(d) { return d.label+ "   " + label_format(d.start); });
+    // ** Right column
+    country
+      .append("text")
+      .classed("label end", true)
+      .attr("x", width-200)
+      // .attr("y", function(d,i) { return slope(d.end); })
+      .attr("y", function(d,i) { var rounded = d3.round(d.end, 1); return slope(rounded) })
+      .attr("xml:space", "preserve")
+      .style("font-size", font_size)
+      .text(function(d) { return label_format(d.end) + "   " + d.label; });
+    // ** Slope lines
+    country
+      .append("line")
+      .classed("slope", function(d) { return d.start || d.end; })
+      .attr("x1", 210)
+      .attr("x2", width-210)
+      .attr("y1", function(d,i) {
+        var rounded = d3.round(d.start, 1)
+        return d.start || d.end ? slope(rounded) - font_size/2 + 2 : null;
+      })
+      .attr("y2", function(d,i) {
+        var rounded = d3.round(d.end, 1)
+        return d.end || d.end ? slope(rounded) - font_size/2 + 2 : null;
+      }); 
+ return chart;
+ }	
+	
+//==================================================================================================
+ //Parallel coordinates
+ //year --choose --pattern 
+ 
+   $.ajax({
+url:'http://128.119.243.147:3300/UFOreports',
+    type: "GET",
+    dataType: 'json',
+   success: function(data,err) {
+		      years_list=data;
+			  
+			  years_list.sort(function(a, b) {
+             return parseFloat(a) - parseFloat(b);
+});
+
+   $.ajax({
+url:'http://128.119.243.147:3300/UFOreports_Countries',
+    type: "GET",
+    dataType: 'json',
+   success: function(data,err) {
+		      var countries_list=data;
+			  console.log(countries_list);
+			  
+			  var dat={};
+              dat.year =1910; //default.
+			  dat.Country="us";
+			  dat.Month=6;
+
+   var sel=d3.select(".selectmenu_year")
+            .append("select")
+            .attr("class","sel")
+	     	.on("change",onchange);
+              		
+   var options = sel.selectAll(".option")
+	            .data(years_list).enter()
+	            .append("option")
+				.attr("class","option")
+	            .text(function (d) { return d; });
+				
+var sel2=d3.select(".selectmenu_country")
+            .append("select")
+            .attr("class","sel")
+	     	.on("change",onchange2);
+              		
+   var options2 = sel2.selectAll(".option")
+	            .data(countries_list).enter()
+	            .append("option")
+				.attr("class","option")
+	            .text(function (d) { return d; });
+                   
+				
+function onchange(){
+   var selectedIndex = sel.property('selectedIndex'),
+       selected_data          = options[0][selectedIndex].__data__;
+   console.log(selected_data);
+  
+   var indx=years_list.indexOf(selected_data);
+   dat.year=selected_data;
+   getStats_pcoord(dat);
+ }	   
+ 
+ function onchange2(){
+   var selectedIndex = sel2.property('selectedIndex'),
+       selected_data2          = options2[0][selectedIndex].__data__;
+   console.log(selected_data2);
+  
+   var indx=countries_list.indexOf(selected_data2);
+   dat.Country=selected_data2;
+   getStats_pcoord(dat);
+ }	   
+ 
+var time_list=[1,2,3,4,5,6,7,8,9,10,11,12];
+var sel3=d3.select(".selectmenu_time")
+            .append("select")
+            .attr("class","sel")
+	     	.on("change",onchange3);
+              		
+   var options3 = sel3.selectAll(".option")
+	            .data(time_list).enter()
+	            .append("option")
+				.attr("class","option")
+	            .text(function (d) { return d; });
+                   
+				
+function onchange3(){
+   var selectedIndex = sel3.property('selectedIndex'),
+       selected_data          = options3[0][selectedIndex].__data__;
+   console.log(selected_data);
+  
+   dat.Month=selected_data;
+   getStats_pcoord(dat);
+ }	   
+ 
+
+ getStats_pcoord(dat);
+ 
+   }
+  }) 
+ }
+});
+ 
+ function getStats_pcoord(data){
+console.log("Data.year= ",data.year); 
+console.log("Data.Country= ",data.Country);
+ $.ajax({
+						type: 'POST',
+						data: (data),
+				        contentType: 'application/json',
+ 			  headers: {
+			  'Content-Type': 'application/x-www-form-urlencoded',
+                          },
+                        url: 'http://128.119.243.147:3300/UFOreports_pcoordChart',						
+                        success: function(resp) {
+                           console.log('success',JSON.stringify(resp));	  
+                           d3.select("#example").select(".pcoord").remove();
+						   d3.select(".pcoord-title").remove();
+						   d3.select(".pcoord-title").html("<td><span><font face=\"verdana\">Year: </font>"+data.year+"<br/>"+
+			
+						 "<font face=\"verdana\">Country: </font>"+data.Country+"<br/></span></td>");
+						 
+                           draw_pcoordinates_chart(resp);
+                     },
+
+					 });
+ 
+ }
+ 
+ 
+function draw_pcoordinates_chart(experiments)
+{
+
+var times=["Dawn","Morning","Noon","Night"];
+
+var data=[];
+experiments.forEach(function(element){
+     var singleObj={};
+     singleObj["Month"]=+element.Month;
+	 singleObj["Day"]=+element.Day;
+	 singleObj["State"]=element.State;
+	 singleObj["Time_Secs"]=element.Time_mins;
+	 var t=element.Time.split(":")[0];
+	 if(t<6)	 singleObj["Time"]=times[0];
+	 else if(t<12) singleObj["Time"] =times[1];
+	 else if(t<18) singleObj["Time"] =times[2];
+	 else  singleObj["Time"] =times[3]; 
+	 singleObj["Month_Posted"]=+element.Month_Posted;
+	 singleObj["Day_Posted"]=+element.Day_Posted;
+	 singleObj["Year_Posted"]=+element.Year_Posted;
+	 singleObj["Time_hrs"] =element.Time_hrs;
+	 data.push(singleObj);
+})
+
+var blue_to_brown = d3.scale.linear()
+  .domain([1,12]) //Months
+  .range(["blue", "brown"])
+  .interpolate(d3.interpolateLab);
+
+// interact with this variable from a javascript console
+var pc1;
+
+var dims={ 'Month':{type:'number'},
+           'Day':{type:'number'},
+		   'State':{type:'string'},
+		   'Time_Secs':{type:'number'},
+           'Time':{type:'string'},
+	       'Time_hrs':{orient: 'right',
+			    type: 'string',
+			    tickPadding: 0,
+			    innerTickSize: 8},
+				'Day_Posted':{type:'number'},
+				'Month_Posted':{type:'number'},
+				'Year_Posted':{type:'number'},}
+
+  pc1 = d3.parcoords()("#example")
+    .data(data)
+    .hideAxis(["name"])
+    .composite("darken")
+    .color(function(d) { return blue_to_brown(d['Month']); })  // quantitative color scale
+    .alpha(0.9)
+    .render()
+    .brushMode("1D-axes")  // enable brushing
+    .interactive()  // command line mode
+	.dimensions(dims);
+
+  var explore_count = 0;
+  var exploring = {};
+  var explore_start = false;
+  pc1.svg
+    .attr("class","pcoord")
+    .selectAll(".dimension")
+    .style("cursor", "pointer")
+    .on("click", function(d) {
+      exploring[d] = d in exploring ? false : true;
+      event.preventDefault();
+      if (exploring[d]) d3.timer(explore(d,explore_count));
+    });
+
+  function explore(dimension,count) {
+    if (!explore_start) {
+      explore_start = true;
+      d3.timer(pc1.brush);
+    }
+    var speed = (Math.round(Math.random()) ? 1 : -1) * (Math.random()+0.5);
+    return function(t) {
+      if (!exploring[dimension]) return true;
+      var domain = pc1.yscale[dimension].domain();
+      var width = (domain[1] - domain[0])/4;
+
+      var center = width*1.5*(1+Math.sin(speed*t/1200)) + domain[0];
+
+      pc1.yscale[dimension].brush.extent([
+        d3.max([center-width*0.01, domain[0]-width/400]),
+        d3.min([center+width*1.01, domain[1]+width/100])
+      ])(pc1.g()
+          .filter(function(d) {
+            return d == dimension;
+          })
+      );
+    };
+  };
+
+}		
+</script>
+
+</body>
+</html>

@@ -1,0 +1,635 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+
+<body style="background:darkgrey">
+<div id="Parent">
+
+<div id="Choropleth">
+<div id="selectmenu" style="position:absolute; top:50px;left:850px; width:800px;height:200px;"></div>
+<div id="table-text">
+<p class="sidetext"  style="position:absolute; top:50px;left:10px;"> <span style="color:green">One cick</span> on the city name in the table created to
+select;<br> <span style="color:green">Doubleclick</span> on the same city name
+to unselect.</br></p>
+</div>
+<div id="container" style="position:absolute; top:150px; left:500px;width:800px;height:600px;"></div>
+<div id="bubble" style="position:absolute; top:80px;left:110px;"></div>
+<div id="tab" style="position:absolute; top:480px;left:10px;"></div>
+</div>
+
+
+</div>
+
+<style>
+
+.table{
+font-size:15px;
+color:brown;
+font-family:courier;
+}
+
+.pool {
+    fill: #3db1ff;
+    stroke: #4f4f4f;
+}
+
+td, th {
+    padding: 1px 4px;
+}
+
+</style>
+
+<style>
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.box {
+  font: 10px sans-serif;
+}
+
+.box line,
+.box rect,
+.box circle {
+  fill: steelblue;
+  stroke: #000;
+  stroke-width: 1px;
+}
+
+.box .center {
+  stroke-dasharray: 3,3;
+}
+
+.box .outlier {
+  fill: none;
+  stroke: #000;
+}
+
+.axis {
+  font: 12px sans-serif;
+}
+ 
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+ 
+.xaxis path { 
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+</style>
+
+
+<style type='text/css'>
+        line.slope-line{
+            stroke:green
+        }
+        text.slope-label{
+            fill:blue;
+            font: 15px Arial;
+        }
+    </style>
+	
+<style>
+.button text {
+  font-size: 20px;
+  fill: #eee;
+  pointer-events: none;
+  text-anchor: middle;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
+
+div.tooltip {	
+    position: absolute;			
+    text-align: center;			
+    width: 120px;					
+    height: 50px;					
+    padding: 2px;				
+    font: 12px sans-serif;		
+    background: lightgreen;	
+    border: 0px;		
+    border-radius: 8px;			
+    pointer-events: none;			
+}
+
+div.absolute1 {
+    position: absolute;
+    top: 10px;
+    right: 650px;
+    width: 100px;
+    height: 20px;
+    border: 3px solid #73AD21;
+}
+
+.absolute2 {
+    position: absolute;
+    top: 50px;
+    right: 850px;
+    
+}
+</style>
+
+<style>
+    body   { color: #444; background: #f3f3f3; font: normal 12px "Adobe Garamond Pro", "Palatino", serif; margin: 2em; }
+    header { margin: 0 0 20px 220px; border-bottom: 1px solid #6c6c6c; width: 360px; position: relative; }
+    h1     { font-size: 16px; font-weight: normal; text-shadow: #fff 0 1px 0; margin: 0 0 0 0; padding: 0; }
+    small  { color: #a3a3a3; font-size: 10px; position: absolute; top: 0.6em; right: 0;}
+    a      { color: #a3a3a3; }
+    text.label { fill: #444; }
+    text.label.start { text-anchor: end; }
+    line.slope { stroke: #444; stroke-width: 1; }
+    .missing text.label { display: none; }
+    .missing line.slope { display: none; }
+    .over text.label { fill: #bb2629; font-size: 14px !important; font-weight: bold; }
+    .over line.slope { stroke: #bb2629; stroke-width: 2; }
+  </style>
+
+<script type="text/javascript" src="http://mbostock.github.com/d3/d3.js"></script>
+<script>
+var d3_2=d3;
+</script>
+
+ 
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+<script>
+var new_d3=d3;
+</script>
+
+<script type="text/javascript" src="http://mbostock.github.com/d3/d3.js"></script>
+<script>
+var d3_2=d3;
+</script>
+
+
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script>
+var old_d3=d3;
+</script>
+
+
+<script src="http://code.jquery.com/jquery-2.1.4.min.js" charset="utf-8"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+<script src="https://dc-js.github.io/dc.js/js/crossfilter.js"></script>
+<script src="https://dc-js.github.io/dc.js/js/dc.js"></script>
+ <script type='text/javascript' src="./js/slopegraph.js"></script>
+ <script type='text/javascript' src="./js/d3.parcoords.js"></script>
+ <script src="./js/d3.svg.multibrush.js"></script>
+ <script src="./js/box.js"></script>
+ <script src="./js/circularHeatChart.js"></script>
+ 
+ <script src="//cdnjs.cloudflare.com/ajax/libs/topojson/1.6.9/topojson.min.js"></script>
+
+<script src="./js/datamaps.world.min.js"></script>
+<script src="node_modules/datamaps/dist/datamaps.world.min.js"></script>
+
+ 
+ <link rel="stylesheet" type="text/css" href="./js/d3.parcoords.css">
+ <link rel="stylesheet" type="text/css" href="./js/style.css">
+ <link rel="stylesheet" type="text/css" href="./js/sequences.css"/>
+  
+<a href="" class="next" style="position:absolute; top:200px; left:1200px;"><span style="font-size:15px;color:pink">Next</span></a>
+<a href="" class="prev" style="position:absolute; top:250px; left:1200px;"><span style="font-size:15px;color:pink">Previous</span></a>
+
+
+<style>
+p.sidetext{
+position:absolute;
+color:brown;
+font-size: 15px;
+font-family:courier;
+}
+
+node-text {
+  font: 24px "Helvetica Neue", Helvetica, Arial, sans-serif;
+  text-anchor: middle;
+  pointer-events: none;
+}
+
+node-circle {
+  fill: #ccc;
+}
+
+.node:hover circle {
+  fill: orange;
+}
+ </style>
+ 
+ <style>
+      .heat-box {
+        stroke: #E6E6E6;
+        stroke-width: 2px;
+      }
+	  .next{
+position: absolute;			
+    text-align: center;			
+    width: 60px;					
+    height: 20px;
+    padding: 2px;				
+    font: 12px sans-serif;		
+    background:green;	
+    border: 0px;		
+    border-radius: 8px;			
+    pointer-events: cursor;
+}
+
+.prev{
+position: absolute;			
+    text-align: center;			
+    width: 60px;					
+    height: 20px;
+    padding: 2px;				
+    font: 12px sans-serif;		
+    background:green;	
+    border: 0px;		
+    border-radius: 8px;			
+    pointer-events: cursor;
+}
+    </style>
+ 
+<script type="text/javascript">
+
+$( document ).ready(function() {
+    var caseList = [
+    'index.html',
+	'index1.html',
+	'index2.html',
+	'index3.html',
+	'index4.html',
+	'index5.html'
+];
+
+    current=$(location).attr('pathname')
+	         .substr($(location).attr('pathname')
+			 .lastIndexOf("/")+1); // get current page: just last part - page name and extension
+   
+    if(current=="")
+	   current="index.html";
+	   
+	console.log(current);
+    if($.inArray(current, caseList)!==-1) { //check if it is in array
+        index=$.inArray(current, caseList);
+    }
+    //navigate thorough pages...
+    $( ".next" ).click(function() {
+    if(index<caseList.length){
+    var n=caseList[index+1];
+	d3.select(".next").attr("href",n);
+
+    }
+    });
+
+    $( ".prev" ).click(function() {
+    if(index>=0){
+    var p=caseList[index-1];
+    d3.select(".prev").attr("href",p);
+    }
+    });
+
+    });
+
+ var d3=old_d3;
+ //console.log(JSON.stringify(new_d3));
+ var years_list;
+ var d3_1=new_d3;
+ 
+ function rangefn(start, stop, step){
+  var a=[start], b=start;
+  while(b<stop){b+=step;a.push(b)}
+  return a;
+};
+ 
+/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+var div1 = d3.select("#Parent").append("div")	
+              .attr("class", "tooltip")				
+              .style("opacity", 0);
+
+			  
+   $.ajax({
+url:'http://128.119.243.147:3300/UFOreports',
+    type: "GET",
+    dataType: 'json',
+   success: function(data,err) {
+           var years_list=data;
+		   years_list.sort(function(a, b) {
+             return parseFloat(a) - parseFloat(b);});
+			 
+		   
+ var sel_start=d3.select("#selectmenu")
+            .append("select")
+            .attr("class","sel")
+	     	.on("change",onchange_start);
+              		
+   var options_start = sel_start.selectAll(".option")
+	            .data(years_list).enter()
+	            .append("option")
+				.attr("class","option")
+	            .text(function (d) { return d; });
+				
+				
+function onchange_start(){
+   var selectedIndex = sel_start.property('selectedIndex'),
+       selected_data          = options_start[0][selectedIndex].__data__;
+   console.log(selected_data);
+   
+   getStats_Choropleth(selected_data);   
+ }	   	
+ }
+});
+ 
+function getStats_Choropleth(year){
+   $.ajax({
+url:'http://128.119.243.147:3300/UFOreports',
+    type: "GET",
+    dataType: 'json',
+   success: function(data,err) {
+               var data = {};
+					
+					data.type='world'; 
+					data.Year=year;
+					$.ajax({
+						type: 'POST',
+						data:(data),
+				        contentType: 'application/json',
+ 			  headers: {
+			  'Content-Type': 'application/x-www-form-urlencoded',
+                          },
+ xhrFields: {
+    withCredentials: true
+  },
+
+                        url: 'http://128.119.243.147:3300/UFOreports_Choropleth',						
+                        success: function(resp) {
+                           		 console.log(JSON.stringify(resp));	
+                                  d3.selectAll('.datamap').remove();
+                                  d3.selectAll('.datamaps-legend').remove();
+								  draw_Choropleth_chart(year,resp);
+								 
+								  
+                        },
+
+                    });
+
+         }
+    });                 
+ }
+
+getStats_Choropleth(2012);
+
+ function getStats_Bubble_Chart(year,countryName){
+   $.ajax({
+url:'http://128.119.243.147:3300/UFOreports',
+    type: "GET",
+    dataType: 'json',
+   success: function(data,err) {
+                    var data = {};
+		var cname={"Canada":"ca","United States of America":"us","United Kingdom":"gb",
+			"Australia":"au"};
+                    data.Country=cname[countryName];					
+					data.Year=year;
+					$.ajax({
+						type: 'POST',
+						data: (data),
+				        contentType: 'application/json',
+ 			  headers: {
+			  'Content-Type': 'application/x-www-form-urlencoded',
+                          },
+ xhrFields: {
+    withCredentials: true
+  },
+                        url: 'http://128.119.243.147:3300/UFOreports_Bubble',						
+                        success: function(resp) {
+                         		 console.log(JSON.stringify(resp));		
+					  draw_Bubble_chart(resp);
+								 
+								  
+                        },
+
+                    });
+
+         }
+   });                 
+ 
+ }
+
+  var margin = 30,
+    w = 400 - margin * 2,
+    h = w,
+    radius = w / 2,
+    strokeWidth = 4,
+    hyp2 = Math.pow(radius, 2),
+    nodeBaseRad = 5;
+
+var svg = d3.select('#bubble').append('svg')
+    .attr('width', w + margin * 2)
+    .attr('height', h + margin * 2)
+	.attr("class","svg-bubbles")
+.append('g').attr("class","g-bubbles")
+    .attr('transform', 'translate(' + margin + ',' + margin + ')');
+	
+ function draw_Bubble_chart(experiments){
+var color = d3.scale.category20b();
+
+var pool = svg.append('circle')
+    .style('stroke-width', strokeWidth * 2)
+    .attr({
+        class: 'pool',
+        r: radius,
+        cy: 0,
+        cx: 0,
+        transform: 'translate(' + w / 2 + ',' + h / 2 + ')'
+    });
+	
+ var force = d3.layout.force()
+    .charge(-50)
+    .gravity(0.05)
+    .nodes(experiments)
+    .size([w, h]);
+
+var nodes = svg.selectAll('.nodes')
+    .data(experiments)
+    .enter()
+	.append('circle')
+    .attr({
+        class: 'nodes',
+        r: function (d) { return d.rad + nodeBaseRad; },
+        //fill: "#fff8d1"
+        fill: function (d) { return color(d.City); }
+	})
+     		
+  
+function pythag(r, b, coord) {
+    r += nodeBaseRad;
+    // force use of b coord that exists in circle to avoid sqrt(x<0)
+    b = Math.min(w - r - strokeWidth, Math.max(r + strokeWidth, b));
+    var b2 = Math.pow((b - radius), 2),
+        a = Math.sqrt(hyp2 - b2);
+    // radius - sqrt(hyp^2 - b^2) < coord < sqrt(hyp^2 - b^2) + radius
+    coord = Math.max(radius - a + r + strokeWidth,
+                Math.min(a + radius - r - strokeWidth, coord));
+
+    return coord;
+}
+
+function tick() {
+    nodes.attr('cx', function (d) { return d.x = pythag(d.rad, d.y, d.x); })
+        .attr('cy', function (d) { return d.y = pythag(d.rad, d.x, d.y); });
+}
+
+nodes.call(force.drag);
+force.on('tick', tick)
+    .start();
+
+// The table generation function
+function tabulate(data, columns) {
+    var table = d3.select("#tab")
+	        .append("table").attr("class","table")
+            .attr("style", "margin-left: 50px"),
+        thead = table.append("thead"),
+        tbody = table.append("tbody");
+	
+    // append the header row
+    thead.append("tr")
+        .selectAll("th")
+        .data(columns)
+        .enter()
+        .append("th")
+            .text(function(column) { return column; });
+
+    // create a row for each object in the data
+    var rows = tbody.selectAll("tr")
+        .data(data)
+        .enter()
+        .append("tr")
+		.style("cursor", "pointer")
+		.on("click",
+		function(d){
+		console.log(JSON.stringify(d));
+		var city=d.City;
+		var rad=d.rad;
+		
+		d3.selectAll(".nodes").transition().attr("opacity",0);
+        
+		d3.select('.g-bubbles')
+		.append('circle')
+        .attr({
+        class: 'node-temp',
+		opacity:1,
+		transform: 'translate(' + w / 2 + ',' + h / 2 + ')',
+        r: function (d) { return rad+ nodeBaseRad; },
+        fill: function (d) { return color(city); 	}}) 
+		
+		.attr('cx',0)
+        .attr('cy', 0)
+        	     
+ 		  
+		})
+         .on("dblclick",function(d){
+		 d3.select(".g-bubbles").selectAll(".node-temp").remove();
+		 
+		 d3.selectAll(".nodes").transition().attr("opacity",1);
+		 })
+		 
+    // create a cell in each row for each column
+    var cells = rows.selectAll("td")
+        .data(function(row) {
+            return columns.map(function(column) {
+     		if(column =="Color")
+	         return {column:column, value: color(row['City'])}
+				else
+				 return { column: column, value: row[column]};
+            });
+        })
+        .enter()
+        .append("td")
+		.attr("style", "font-size: 15px")
+        .attr("style", "font-family: Courier") // sets the font style
+            .html(function(d) { return d.value; });
+    
+    return table;
+}
+
+// render the table
+ var peopleTable = tabulate(experiments, ["City","rad"]);
+ 
+
+	
+	
+ }
+ 
+ function draw_Choropleth_chart(year,experiments)
+ {
+  var color = d3.scale.category20b();  
+	var colors={};
+	
+	for(key in experiments)
+	{
+	if(key=="us")
+	colors["USA"]=color(experiments[key]);
+	else if(key =="gb")
+	colors["GBR"]=color(experiments[key]);
+	else if(key=="au")
+	colors["AUS"]=color(experiments[key]);
+	else
+	colors["CAN"]=color(experiments[key]);
+	}
+
+    var map = new Datamap({
+        element: document.getElementById('container'),
+        scope: 'world',		
+		done: function(datamap) {
+            datamap.svg.selectAll('.datamaps-subunit').on('click', function(geography) {
+			d3.select(".svg-bubbles").selectAll(".nodes").remove();
+			d3.select(".table").remove();
+			d3.select(".node-temp").remove();
+                getStats_Bubble_Chart(year,geography.properties.name);
+            });
+			
+        },
+		fills: {
+            LOW: color(1),
+			HIGH:color(1000),
+            UNKNOWN:'rgb(0,0,0)',
+            defaultFill: 'rgb(0,0,0)'
+        },
+		 data: {
+		   GBR: {
+                 numberOfThings: experiments['gb']
+            },
+		    CAN: {
+                  numberOfThings: experiments['ca']
+            },
+            AUS: {
+                  numberOfThings: experiments['au']
+            },
+            USA: {
+                 numberOfThings: experiments['us']
+            }
+        },
+		geographyConfig: {
+		 highlightOnHover: false,
+            popupTemplate: function(geo, data) {
+                return ['<div class="hoverinfo"><strong>',
+                        'Number of things in ' + geo.properties.name,
+                        ': ' + data.numberOfThings,
+                        '</strong></div>'].join('');
+            }
+        }
+    });
+	 map.updateChoropleth(colors);
+	 map.legend();
+  }
+ 	
+		
+</script>
+
+</body>
+</html>

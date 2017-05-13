@@ -1,0 +1,646 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+
+<body style="background:darkgrey">
+<div id="Parent">
+
+
+<div class="choice_buttons" style="position: absolute; top:20px; left:-10px; width: 200px; height: 400px;"></div>
+<div class="whisker" style="position: absolute; top:30px; left:200px "></div>
+
+<div id="Choropleth">
+<div id="selectmenu" style="position:absolute; top:350px;left:100px; width:800px;height:600px;"></div>
+<div id="container" style="position:absolute; top:350px; left:400px;width:800px;height:600px;"></div>
+<div id="table" style="position:absolute; top:450px; left:20px;"></div>
+</div>
+
+</div>
+<style>
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.box {
+  font: 10px sans-serif;
+}
+
+.box line,
+.box rect,
+.box circle {
+  fill: steelblue;
+  stroke: #000;
+  stroke-width: 1px;
+}
+
+.box .center {
+  stroke-dasharray: 3,3;
+}
+
+.box .outlier {
+  fill: none;
+  stroke: #000;
+}
+
+.axis {
+  font: 12px sans-serif;
+}
+ 
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+ 
+.xaxis path { 
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+div.absolute1 {
+    position: absolute;
+    top: 10px;
+    right: 650px;
+    width: 100px;
+    height: 20px;
+    border: 3px solid #73AD21;
+}
+
+.absolute2 {
+    position: absolute;
+    top: 50px;
+    right: 850px;
+    
+}
+</style>
+
+<style>
+    body   { color: #444; background: #f3f3f3; font: normal 12px "Adobe Garamond Pro", "Palatino", serif; margin: 2em; }
+    header { margin: 0 0 20px 220px; border-bottom: 1px solid #6c6c6c; width: 360px; position: relative; }
+    h1     { font-size: 16px; font-weight: normal; text-shadow: #fff 0 1px 0; margin: 0 0 0 0; padding: 0; }
+    small  { color: #a3a3a3; font-size: 10px; position: absolute; top: 0.6em; right: 0;}
+    a      { color: #a3a3a3; }
+    text.label { fill: #444; }
+    text.label.start { text-anchor: end; }
+    line.slope { stroke: #444; stroke-width: 1; }
+    .missing text.label { display: none; }
+    .missing line.slope { display: none; }
+    .over text.label { fill: #bb2629; font-size: 14px !important; font-weight: bold; }
+    .over line.slope { stroke: #bb2629; stroke-width: 2; }
+  </style>
+
+<script type="text/javascript" src="http://mbostock.github.com/d3/d3.js"></script>
+<script>
+var d3_2=d3;
+</script>
+
+ 
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+<script>
+var new_d3=d3;
+</script>
+
+<script type="text/javascript" src="http://mbostock.github.com/d3/d3.js"></script>
+<script>
+var d3_2=d3;
+</script>
+
+
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script>
+var old_d3=d3;
+</script>
+
+
+<script src="http://code.jquery.com/jquery-2.1.4.min.js" charset="utf-8"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+<script src="https://dc-js.github.io/dc.js/js/crossfilter.js"></script>
+<script src="https://dc-js.github.io/dc.js/js/dc.js"></script>
+ <script type='text/javascript' src="./js/slopegraph.js"></script>
+ <script type='text/javascript' src="./js/d3.parcoords.js"></script>
+ <script src="./js/d3.svg.multibrush.js"></script>
+ <script src="./js/box.js"></script>
+ <script src="./js/circularHeatChart.js"></script>
+ 
+ <script src="//cdnjs.cloudflare.com/ajax/libs/topojson/1.6.9/topojson.min.js"></script>
+
+<script src="./js/datamaps.usa.min.js"></script>
+<script src="node_modules/datamaps/dist/datamaps.usa.min.js"></script>
+ 
+ <link rel="stylesheet" type="text/css" href="./js/d3.parcoords.css">
+ <link rel="stylesheet" type="text/css" href="./js/style.css">
+ <link rel="stylesheet" type="text/css" href="./js/sequences.css"/>
+  
+<a href="" class="prev" style="position:absolute; top:250px; left:1200px;"><span style="font-size:15px;color:pink">Previous</span></a>
+
+ 
+ <style>
+p.sidetext{
+position:absolute;
+color:brown;
+font-size: 15px;
+font-family:courier;
+}
+	  .next{
+position: absolute;			
+    text-align: center;			
+    width: 60px;					
+    height: 20px;
+    padding: 2px;				
+    font: 12px sans-serif;		
+    background:green;	
+    border: 0px;		
+    border-radius: 8px;			
+    pointer-events: cursor;
+}
+
+.prev{
+position: absolute;			
+    text-align: center;			
+    width: 60px;					
+    height: 20px;
+    padding: 2px;				
+    font: 12px sans-serif;		
+    background:green;	
+    border: 0px;		
+    border-radius: 8px;			
+    pointer-events: cursor;
+}
+
+td, th {
+    padding: 1px 4px;
+	font-size: 15px
+}
+    </style>
+ 
+<script type="text/javascript">
+
+$( document ).ready(function() {
+    var caseList = [
+    'index.html',
+	'index1.html',
+	'index2.html',
+	'index3.html',
+	'index4.html',
+	'index5.html'
+];
+
+    current=$(location).attr('pathname')
+	         .substr($(location).attr('pathname')
+			 .lastIndexOf("/")+1); // get current page: just last part - page name and extension
+   
+    if(current=="")
+	   current="index.html";
+	   
+	console.log(current);
+    if($.inArray(current, caseList)!==-1) { //check if it is in array
+        index=$.inArray(current, caseList);
+    }
+    //navigate thorough pages...
+    $( ".next" ).click(function() {
+    if(index<caseList.length){
+    var n=caseList[index+1];
+	d3.select(".next").attr("href",n);
+
+    }
+    });
+
+    $( ".prev" ).click(function() {
+    if(index>=0){
+    var p=caseList[index-1];
+    d3.select(".prev").attr("href",p);
+    }
+    });
+
+    });
+
+ var d3=old_d3;
+ //console.log(JSON.stringify(new_d3));
+ var years_list;
+ var d3_1=new_d3;
+ 
+ function rangefn(start, stop, step){
+  var a=[start], b=start;
+  while(b<stop){b+=step;a.push(b)}
+  return a;
+};
+
+	var div1 = d3.select("#Parent").append("div")	
+              .attr("class", "tooltip")				
+              .style("opacity", 0);
+
+ 
+//////////////////////////////////////////////////////////////////////////////////////
+//Draw box-whisker plots
+var labels=["Year","Month","Day","Year_Posted","Month_Posted","Day_Posted","Sentiment"];
+
+var w= 200;
+var h= 400;
+var svg_button= d3.select(".choice_buttons")
+            .append("svg")
+            .attr("width",w)
+            .attr("height",h);
+			
+var allButtons= svg_button.append("g")
+                    .attr("id","allButtons_box") 
+
+					
+//groups for each button (which will hold a rect and text)
+var buttonGroups= allButtons.selectAll(".button")
+                        .data(labels)
+                        .enter()
+                        .append("g")
+                        .attr("class","button_box")
+                        .style("cursor","pointer")
+						 .on("click",function(d) {
+                                updateButtonColorsBox(d3.select(this), d3.select(this.parentNode))
+								})
+					     .on("mouseover", function() {
+			                   if (d3.select(this).select("rect").attr("fill") != pressedColor) {
+							    d3.select(this)
+								.select("rect")
+								.attr("fill",hoverColor);
+						       }
+					        })
+					    .on("mouseout", function() {
+					     	if (d3.select(this).select("rect").attr("fill") != pressedColor) {
+					     		d3.select(this)
+								.select("rect")
+								.attr("fill",defaultColor);
+						      }
+					      })
+									
+						
+var bWidth= 120; //button width
+var bHeight= 25; //button height
+var bSpace= 10; //space between buttons
+var x0= 80; //x offset
+var y0= 25; //y offset
+
+//adding a rect to each button group
+//sidenote: rx and ry give the rects rounded corners
+buttonGroups.append("rect")
+            .attr("class","buttonRect_box")
+            .attr("width",bWidth)
+            .attr("height",bHeight)
+            .attr("x",x0)
+            .attr("y",function(d,i) {
+                return y0+(bHeight+bSpace)*i;})
+            .attr("rx",5) 
+            .attr("ry",5)
+            .attr("fill","steelblue")
+
+//adding text to each button group, centered within the button rect
+buttonGroups.append("text")
+            .attr("class","buttonText_box")
+            .attr("font-family","FontAwesome")
+            .attr("x",x0+bWidth/2)
+            .attr("y",function(d,i) {
+                return y0+(bHeight+bSpace)*i+bHeight/2;})
+            .attr("text-anchor","middle")
+            .attr("dominant-baseline","central")
+            .attr("fill","white")
+            .text(function(d) {return d;})                            
+
+var defaultColor= "#7777BB"
+var hoverColor= "#0000ff"
+var pressedColor= "#000077"
+ 
+function updateButtonColorsBox(button, parent) { //when buttons1 are clicked.
+    parent.selectAll("rect")
+            .attr("fill",defaultColor)
+
+    button.select("rect")
+            .attr("fill",pressedColor)
+			
+	//d3.select(".svg-counts").selectAll(".parent-to-all").remove();
+	/*
+	d3.select(".svg-counts").selectAll(".lines").remove();
+	d3.select(".svg-counts").selectAll(".circles").remove();
+	d3.select(".svg-counts").selectAll(".bars").remove();
+	d3.select(".svg-counts").selectAll(".label").remove();
+	d3.select(".svg-counts").selectAll(".label-text").remove();
+	d3.select(".chart1").select(".buttons2").remove();
+	*/
+	d3.select(".whisker").selectAll(".svg-box").remove();
+			
+    console.log(JSON.stringify(button[0][0]),button[0][0].__data__);	
+   getStats_Box(button[0][0].__data__);	
+}
+  
+getStats_Box("Year");  
+function getStats_Box(type)
+{
+   $.ajax({
+    url:'http://128.119.243.147:3300/UFOreports',
+    type: "GET",
+    dataType: 'json',
+   success: function(data,err) {
+  // set here your svg properties
+                    var data = {};
+					
+					data.type=type;
+					
+					$.ajax({
+						type: 'POST',
+						data: (data),
+				        contentType: 'application/json',
+				        headers: {
+				'Content-Type': 'application/x-www-form-urlencoded',
+                           },
+                        url: 'http://128.119.243.147:3300/UFOreports_BoxChart',						
+                        success: function(resp) {
+                            console.log('success');
+							
+							draw_Box_Chart(resp);					
+							
+                        }
+                    });
+
+         }
+   });                 
+}
+
+function draw_Box_Chart(experiments)
+{
+var margin = {top: 10, right: 50, bottom: 10, left: 50},
+    width = 120 - margin.left - margin.right,
+    height = 150 - margin.top - margin.bottom;
+
+var min = Infinity,
+    max = -Infinity;
+
+var chart = d3.box()
+    .whiskers(iqr(1.5))
+    .width(width)
+    .height(height);
+	
+var data = [];
+
+  experiments.forEach(function(x) {
+    var e = Math.floor(x.expt - 1),
+        r = Math.floor(x.run - 1),
+        s = Math.floor(x.value),
+        d = data[e];
+    if (!d) d = data[e] = [s];
+    else d.push(s);
+    if (s > max) max = s;
+    if (s < min) min = s;
+  });
+
+  chart.domain([min, max]);
+
+  var svg = d3.select(".whisker").append("svg").attr("class","svg-box")
+      
+        .selectAll("svg")
+        .data(data)
+        .enter().append("svg")
+      .attr("class", "box")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.bottom + margin.top)
+      .append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+	  //.attr("transform","rotate(-90)" )
+      .call(chart);
+
+	 // d3.select(".svg-box").transition().attr("transform","rotate(-90)" );
+	  
+  setInterval(function() {
+    svg.datum(randomize).call(chart.duration(5));
+  }, 5);
+
+
+function randomize(d) {
+  if (!d.randomizer) d.randomizer = randomizer(d);
+  return d.map(d.randomizer);
+}
+
+function randomizer(d) {
+  var k = d3.max(d) * .02;
+  return function(d) {
+    return Math.max(min, Math.min(max, d + k * (Math.random() - .5)));
+  };
+}
+
+// Returns a function to compute the interquartile range.
+function iqr(k) {
+  return function(d, i) {
+    var q1 = d.quartiles[0],
+        q3 = d.quartiles[2],
+        iqr = (q3 - q1) * k,
+        i = -1,
+        j = d.length;
+    while (d[++i] < q1 - iqr);
+    while (d[--j] > q3 + iqr);
+    return [i, j];
+   };
+  }   
+}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+//choropleth2
+
+   $.ajax({
+    url:'http://128.119.243.147:3300/UFOreports',
+    type: "GET",
+    dataType: 'json',
+   success: function(data,err) {
+           var years_list=data;
+		   years_list.sort(function(a, b) {
+             return parseFloat(a) - parseFloat(b);});
+			 
+		   
+ var sel_start=d3.select("#selectmenu")
+            .append("select")
+            .attr("class","sel")
+	     	.on("change",onchange_start);
+              		
+   var options_start = sel_start.selectAll(".option")
+	            .data(years_list).enter()
+	            .append("option")
+				.attr("class","option")
+	            .text(function (d) { return d; });
+				
+				
+function onchange_start(){
+   var selectedIndex = sel_start.property('selectedIndex'),
+       selected_data          = options_start[0][selectedIndex].__data__;
+   console.log(selected_data);
+   
+   getStats_Choropleth2(selected_data);   
+ }	   	
+ }
+});
+ 
+
+function getStats_Choropleth2(year){
+   $.ajax({
+    url:'http://128.119.243.147:3300/UFOreports',
+    type: "GET",
+    dataType: 'json',
+   success: function(data,err) {
+                 var data = {};		
+				
+					data.Year=year;
+					data.Country="us";
+					$.ajax({
+						type: 'POST',
+						data: (data),
+				        contentType: 'application/json',
+				        headers: {
+		         	  'Content-Type': 'application/x-www-form-urlencoded',
+                           },
+                        url: 'http://128.119.243.147:3300/UFOreports_Choropleth2',						
+                        success: function(resp) {
+                           		 console.log(JSON.stringify(resp));
+                                  d3.selectAll('.datamap').remove();
+                                  d3.selectAll('.datamaps-legend').remove();
+                                  d3.selectAll(".svg-table").remove();								  
+								  draw_Choropleth2_chart(year,resp);
+								 
+								  
+                        }
+                    });
+
+         }
+   });                 
+ }
+
+getStats_Choropleth2(2012);
+ function getStats_table_Chart(year,stateName){
+   $.ajax({
+    url:'http://128.119.243.147:3300/UFOreports',
+    type: "GET",
+    dataType: 'json',
+   success: function(data,err) {
+                    var data = {};
+					
+                    data.State=stateName;					
+					data.Year=year;
+					
+					$.ajax({
+						type: 'POST',
+						data: (data),
+				        contentType: 'application/json',
+				       headers: {
+				'Content-Type': 'application/x-www-form-urlencoded',
+                           },
+                        url: 'http://128.119.243.147:3300/UFOreports_table',						
+                        success: function(resp) {
+                           		 console.log(JSON.stringify(resp));		
+								  draw_text_chart(resp);
+								 
+								  
+                        }
+                    });
+
+         }
+});                 
+ 
+ }
+
+ function draw_text_chart(experiments){
+ // The table generation function
+function tabulate(data, columns) {
+    var table = d3.select("#table")
+	        .append("table").attr("class","svg-table")
+            .attr("style", "margin-left: 50px"),
+        thead = table.append("thead"),
+        tbody = table.append("tbody");
+	
+    // append the header row
+    thead.append("tr")
+        .selectAll("th")
+        .data(columns)
+        .enter()
+        .append("th")
+            .text(function(column) { return column; });
+
+    // create a row for each object in the data
+    var rows = tbody.selectAll("tr")
+        .data(data)
+        .enter()
+        .append("tr");
+		 
+    // create a cell in each row for each column
+    var cells = rows.selectAll("td")
+        .data(function(row) {
+            return columns.map(function(column) {
+				 return { column: column, value: row[column]};
+            });
+        })
+        .enter()
+        .append("td")
+		.attr("style", "font-size: 15px")
+        .attr("style", "font-family: Courier") // sets the font style
+            .html(function(d) { return d.value; });
+    
+    return table;
+}
+
+// render the table
+ var peopleTable = tabulate(experiments, ["Month","Count","Time_hrs","Sentiment0","Sentiment1"]);
+ 
+ }
+ 
+ 
+ function draw_Choropleth2_chart(year,experiments)
+ {
+    var color = d3.scale.category20b();  
+    var datum={};
+	var colors={};
+	for(key in experiments)
+	{
+	//console.log(key,experiments[key]);
+	datum[key]={};
+	colors[key]=color(experiments[key]);
+	}
+	
+	for(key in experiments)
+	{
+	//console.log(key,experiments[key]);
+	datum[key].numberOfThings=experiments[key];
+	}
+	
+    var map = new Datamap({
+        element: document.getElementById('container'),
+        scope: 'usa',		
+		
+		fills: {
+            LOW: color(1),
+			HIGH:color(1000),
+            UNKNOWN: color(0),
+            defaultFill: 'rgb(0,0,0)'
+        },
+		done: function(datamap) {
+            datamap.svg.selectAll('.datamaps-subunit').on('click', function(geography) {
+			d3.selectAll(".svg-table").remove();
+			//console.log(JSON.stringify(geography));
+                getStats_table_Chart(year,geography.id.toLowerCase());
+            });
+        },
+		 data:datum,
+		geographyConfig: {
+		 highlightOnHover: false,
+            popupTemplate: function(geo, data) {
+                return ['<div class="hoverinfo"><strong>',
+                        'Number of things in ' + geo.properties.name,
+                        ': ' + data.numberOfThings,
+                        '</strong></div>'].join('');
+            }
+        }
+    });
+	map.updateChoropleth(colors);
+	 map.legend();
+  }
+  
+ 	
+</script>
+
+</body>
+</html>

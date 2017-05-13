@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+
+<body style="background:darkgrey">
+
+<div id="title">
+<h1 class="heading">Alien Contacts,UFO sighting reports...</h1>
+<p class="introduction">Alien contacts has always been of great interest and source of wonder to different communities of people across the world.The data
+visualizations provided here are based on geolocated and scrubbed data collected and maintained by NUFORC organization over the last century.The records show
+UFO sighting reports made across four different countries USA,Canada,Australia and England in varying number of reports across the years.While the USA has
+always been on the list of reporting countries, the others picked up the trend as time passed on. The first sighting report from Canada is in the 1940s and from
+Englad,Australia is in early 1950s.The number of hours the sightings lasted has gone up drastically along with the years.
+<br>Clicking on the <span style="color:green">Start</span> button below takes you through the trends of change in the number of reports across the countries, the change
+in the total duration of the events and the locations across USA where the events were reported from through the years.<span
+style="color:green">Default Year:2012<span></br><p>
+
+</div>
+<div id="pie-chart" style="position:absolute; top:300px; left:5px; height:100px;width:600px"></div>
+
+<button onclick="repeat()" class="absolute2" >Start</button>
+<div id="year-text" class="absolute1"></div>
+
+<div id="line-chart" style="position:absolute; top:400px; left:700px; width:800px;height:800px;"></div>
+<div id="line-chart2" style="position:absolute; top:620px; left:20px; width:600px;height:800px;"></div>
+<div id="container" style="position:absolute; top:750px; left:650px;width:800px;height:600px;"></div>
+<div id="map-text">
+<p class="sidetext" style="top:1250px;left:550px;">Reports made from the states across the USA in the year of iteration. <p>
+</div>
+<a href="" class="next" style="position:absolute; top:350px; left:1300px;"><span style="font-size:15px;color:pink">Next</span></a>
+<a href="" class="prev" style="position:absolute; top:400px; left:1300px;"><span style="font-size:15px;color:pink">Previous</span></a>
+
+</div>
+
+<style>
+
+div.absolute1 {
+    position: absolute;
+    top: 350px;
+    left: 550px;
+    width: 100px;
+    height: 20px;
+    border: 3px solid #73AD21;
+    text-align: center;
+    font-size:15px;
+    			
+}
+
+.absolute2 {
+    position: absolute;
+    top: 500px;
+    left: 450px;
+    
+}
+
+h1.heading{
+position:absolute;
+top:10px;
+left:350px;
+color: yellow;
+stroke:  #4f4f4f;
+font-size: 150%;
+font-family:verdana;
+border: 1px solid powderblue;
+padding: 20px;
+}
+p.sidetext{
+position:absolute;
+color:brown;
+font-size: 15px;
+font-family:courier;
+}
+
+p.introduction{
+position:absolute;
+top:100px;
+left:40px;
+color:brown;
+font-size: 15px;
+font-family:courier;
+}
+
+.pool {
+    fill: #3db1ff;
+    stroke: #4f4f4f;
+}
+</style>
+<style>
+.button text {
+  font-size: 20px;
+  fill: #eee;
+  pointer-events: none;
+  text-anchor: middle;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
+
+.next{
+position: absolute;			
+    text-align: center;			
+    width: 60px;					
+    height: 20px;
+    padding: 2px;				
+    font: 12px sans-serif;		
+    background:green;	
+    border: 0px;		
+    border-radius: 8px;			
+    pointer-events: cursor;
+}
+
+.prev{
+position: absolute;			
+    text-align: center;			
+    width: 60px;					
+    height: 20px;
+    padding: 2px;				
+    font: 12px sans-serif;		
+    background:green;	
+    border: 0px;		
+    border-radius: 8px;			
+    pointer-events: cursor;
+}
+
+div.tooltip {	
+    position: absolute;			
+    text-align: center;			
+    width: 120px;					
+    height: 50px;					
+    padding: 2px;				
+    font: 12px sans-serif;		
+    background: lightgreen;	
+    border: 0px;		
+    border-radius: 8px;			
+    pointer-events: none;			
+}
+
+</style>
+
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script>
+var old_d3=d3;
+</script>
+
+
+<script src="http://code.jquery.com/jquery-2.1.4.min.js" charset="utf-8"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+<script src="https://dc-js.github.io/dc.js/js/crossfilter.js"></script>
+<script src="https://dc-js.github.io/dc.js/js/dc.js"></script>
+ <script type='text/javascript' src="./js/slopegraph.js"></script>
+ <script type='text/javascript' src="./js/d3.parcoords.js"></script>
+ <script src="./js/d3.svg.multibrush.js"></script>
+ <script src="./js/box.js"></script>
+ <script src="./js/circularHeatChart.js"></script>
+ 
+ <script src="//cdnjs.cloudflare.com/ajax/libs/topojson/1.6.9/topojson.min.js"></script>
+
+<script src="./js/datamaps.usa.min.js"></script>
+<script src="node_modules/datamaps/dist/datamaps.usa.min.js"></script>
+ 
+ <link rel="stylesheet" type="text/css" href="./js/d3.parcoords.css">
+ <link rel="stylesheet" type="text/css" href="./js/style.css">
+ <link rel="stylesheet" type="text/css" href="./js/sequences.css"/>
+
+ <script type="text/javascript">
+ 
+  $( document ).ready(function() {
+    var caseList = [
+    'index.html',
+	'index1.html',
+	'index2.html',
+	'index3.html',
+	'index4.html',
+	'index5.html'
+];
+
+    current=$(location).attr('pathname')
+	         .substr($(location).attr('pathname')
+			 .lastIndexOf("/")+1); // get current page: just last part - page name and extension
+   
+    if(current=="")
+	   current="index.html";
+	   
+	console.log(current);
+    if($.inArray(current, caseList)!==-1) { //check if it is in array
+        index=$.inArray(current, caseList);
+    }
+    //navigate thorough pages...
+    $( ".next" ).click(function() {
+    if(index<caseList.length){
+    var n=caseList[index+1];
+	d3.select(".next").attr("href",n);
+
+    }
+    });
+
+    $( ".prev" ).click(function() {
+    if(index>=0){
+    var p=caseList[index-1];
+    d3.select(".prev").attr("href",p);
+    }
+    });
+
+    });
+ 
+ function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+var div1 = d3.select("#Parent").append("div")	
+              .attr("class", "tooltip")				
+              .style("opacity", 0);
+
+var years_list=[];
+function repeat()
+{
+   $.ajax({
+    url:'http://128.119.243.147:3300/UFOreports',
+    type: "GET",
+    dataType: 'json',
+   success: function(data,err) {
+
+     years_list=data;
+	  years_list.sort(function(a, b) {
+             return parseFloat(a) - parseFloat(b);
+    });
+
+    getStats_PC_loop(years_list[year_id1]);
+	getStats_LC_loop(years_list[year_id2]);
+	getStats_LC2_loop(years_list[year_id3]);
+	getStats_usa_loop(years_list[year_id4]);
+	
+	 }
+      }); 
+   
+ }
+ 
+var year_id1=0;
+var year_id2=0;
+var year_id3=0;
+var year_id4=0;
+
+getStats_PC(2012);
+getStats_LC(2012);
+getStats_LC2(2012);
+getStats_usa(2012);
+
+function getStats_usa(year)
+  {
+   $.ajax({
+url:'http://128.119.243.147:3300/UFOreports',
+    type: "GET",
+    dataType: 'json',
+   success: function(data,err) {
+                    var data = {};
+					
+					data.Year=year;
+					console.log(year);
+					$.ajax({
+						type: 'POST',
+						data: (data),
+				        contentType: 'application/json',
+			
+ 			  headers: {
+				'Content-Type': 'application/x-www-form-urlencoded',
+                          },
+                        url:'http://128.119.243.147:3300/UFOreports_Choropleth2',						
+                        success: function(resp) {
+                            console.log('success');
+							draw_choropleth_chart(year,resp);
+						 
+							
+                        },
+ xhrFields: {
+    withCredentials: true
+  }
+                    });
+
+  return 0;
+  }
+});
+}
+
+function getStats_usa_loop(year)
+  {
+   $.ajax({
+    url:'http://128.119.243.147:3300/UFOreports',
+    type: "GET",
+    dataType: 'json',
+   success: function(data,err) {
+  // set here your svg properties
+                    var data = {};
+					
+					data.Year=year;
+					console.log(year);
+					$.ajax({
+						type: 'POST',
+						data: (data),
+				        contentType: 'application/json',
+						  headers: {
+						  'Content-Type': 'application/x-www-form-urlencoded',
+                           },
+ xhrFields: {
+    withCredentials: true
+  },
+                        url:'http://128.119.243.147:3300/UFOreports_Choropleth2',						
+                        success: function(resp) {
+                            console.log('success');
+                                  d3.selectAll('.datamap').remove();
+                                  d3.selectAll('.datamaps-legend').remove();
+                                  d3.selectAll(".svg-table").remove();								  
+				draw_choropleth_chart(year,resp);
+						    year_id4+=1
+							if(year_id4<years_list.length)
+                               {
+							   sleep(3000).then(() => {
+							   getStats_usa_loop(years_list[year_id4]);
+							   });
+                                   }							
+							
+                        }
+                    });
+
+         }
+    });                 
+  }
+  
+ function draw_choropleth_chart(year,experiments)
+{
+    var color = d3.scale.category20b();  
+    var datum={};
+	var colors={};
+	for(key in experiments)
+	{
+	console.log(key,experiments[key]);
+	datum[key]={};
+        if(experiments[key]>=0)
+	colors[key]="purple";
+        else
+        colors[key]="black"; 
+	}
+	
+	for(key in experiments)
+	{
+	//console.log(key,experiments[key]);
+	datum[key].numberOfThings=experiments[key];
+	}
+	
+    var map = new Datamap({
+        element: document.getElementById('container'),
+        scope: 'usa',		
+		
+		fills: {
+            REPORTED: "purple",
+            UNKNOWN: "black",
+            defaultFill: 'rgb(0,0,0)'
+        },
+		 data:datum,
+		geographyConfig: {
+		 highlightOnHover: false,
+            popupTemplate: function(geo, data) {
+                return ['<div class="hoverinfo"><strong>',
+                        'Number of things in ' + geo.properties.name,
+                        ': ' + data.numberOfThings,
+                        '</strong></div>'].join('');
+            }
+        }
+    });
+	map.updateChoropleth(colors);
+	 map.legend();
+} 
+ 
+function draw_pieChart(y,experiments)
+{
+         var chart = dc.pieChart("#pie-chart");
+          d3.select("#year-text")
+		    
+            .append("text")
+            .attr("class","texts")
+            .attr("font-family","FontAwesome")
+             .attr("font-size","50px")
+            .attr("text-anchor","middle")
+            .attr("dominant-baseline","central")
+            .attr("fill","white")
+            .text(function(d) {return "Year- "+y;})  
+			
+			
+          var ndx           = crossfilter(experiments),
+          runDimension  = ndx.dimension(function(d) {return d._id;})
+      speedSumGroup = runDimension.group().reduceSum(function(d) {return d.count;});
+
+       
+      chart
+           .cx("350") 
+           .cy("100")
+          .slicesCap(4)
+          .innerRadius(5)
+          .externalLabels(1)
+          .externalRadiusPadding(5)
+          .drawPaths(true)
+          .dimension(runDimension)
+          .group(speedSumGroup)
+		   .minAngleForLabel(0.5)
+          .legend(dc.legend().x(120).y(25))
+		  .renderLabel(true);
+		   
+      // example of formatting the legend via svg
+      // http://stackoverflow.com/questions/38430632/how-can-we-add-legends-value-beside-of-legend-with-proper-alignment
+      chart.on('pretransition', function(chart) {
+          chart.selectAll('.dc-legend-item text')
+              .text('')
+            .append('tspan')
+              .text(function(d) { return  d.name; })
+            .append('tspan')
+              .attr('x', 100)
+              .attr('text-anchor', 'end')
+              .text(function(d) { return d.data; });
+      });
+	  
+      chart.render();
+	 
+}
+
+function getStats_PC(year)
+  {
+   $.ajax({
+url:'http://128.119.243.147:3300/UFOreports',
+    type: "GET",
+    dataType: 'json',
+   success: function(data,err) {
+   //console.log(data);
+                    var data = {};
+					
+					data.value=year;
+					//console.log(year);
+					$.ajax({
+						type: 'POST',
+						data: (data),
+				        contentType: 'application/json',
+			
+ 			  headers: {
+						  'Content-Type': 'application/x-www-form-urlencoded',
+                          },
+                        url: 'http://128.119.243.147:3300/UFOreports_PieChart',						
+                        success: function(resp) {
+                            console.log('success');
+							draw_pieChart(year,resp);
+						 
+							
+                        },
+ xhrFields: {
+    withCredentials: true
+  }
+                    });
+
+  return 0;
+  }
+});
+}
+
+function getStats_PC_loop(year)
+  {
+   $.ajax({
+    url:'http://128.119.243.147:3300/UFOreports',
+    type: "GET",
+    dataType: 'json',
+   success: function(data,err) {
+  // set here your svg properties
+                    var data = {};
+					
+					data.value=year;
+					console.log(year);
+					$.ajax({
+						type: 'POST',
+						data: (data),
+				        contentType: 'application/json',
+						  headers: {
+						  'Content-Type': 'application/x-www-form-urlencoded',
+                           },
+ xhrFields: {
+    withCredentials: true
+  },
+                        url: 'http://128.119.243.147:3300/UFOreports_PieChart',						
+                        success: function(resp) {
+                            console.log('success');
+							d3.select("#year-text").select(".texts").remove();
+							draw_pieChart(year,resp);
+						    year_id1+=1
+							if(year_id1<years_list.length)
+                               {
+							   sleep(3000).then(() => {
+							   getStats_PC_loop(years_list[year_id1]);
+							   });
+                                   }							
+							
+                        }
+                    });
+
+         }
+    });                 
+  }
+  
+  
+  
+
+var first=1;
+var width=600,height=400;
+ //console.log(Object.keys(experiments[0]));
+  var svgline = d3.select("#line-chart")
+           .append("svg")
+		   .attr("class","svg-line")
+		   .attr("width",width)
+		   .attr("height",height),
+    margin = {top: 20, right: 20, bottom: 30, left: 50};
+	
+    width = svgline.attr("width") - margin.left - margin.right,
+    height = svgline.attr("height") - margin.top - margin.bottom;
+	
+function draw_Line_Chart(year,experiments)
+{
+console.log("called line chart...");
+  var xScale= d3.scale.ordinal().rangePoints([0, width]);
+  var yScale= d3.scale.linear().range([height, 0]);
+  var y_min=experiments['Min'];
+  var y_max=experiments['Max'];
+  
+  xScale.domain(d3.range(13));
+  yScale.domain([y_min-5,y_max+10]);
+      
+   var xAxis=d3.svg.axis().scale(xScale).orient("bottom").ticks(13);
+   var yAxis=d3.svg.axis().scale(yScale).orient("left").ticks(4);
+
+	var line1 = d3.svg.line()
+    .x(function(d,i) { return xScale(d._id); })
+    .y(function(d) { return yScale(d.count); });
+   
+	var container=svgline.append("g").attr("class","parent-to-all");
+	 // x-axis
+	 if(first==1)
+	{
+   var x=container.append("g")
+      .attr("class", "xaxis")
+      .attr("transform", "translate(40," + height + ")")
+      .call(xAxis);
+	  
+	  x.selectAll("text")  
+            .style("text-anchor", "end")
+            .attr("dx", ".8em")
+            .attr("dy", ".5em")
+			.attr("class","label-text")
+           // .attr("transform", "rotate(-5)" );
+	  
+      x.append("text")
+      .attr("class", "label")
+      .attr("x", width)
+      .attr("y", -6)
+      .style("text-anchor", "end")
+      .text("Months")
+	  ; 
+  
+  // y-axis
+ var y= container.append("g")
+      .attr("class", "yaxis")
+	  .attr("transform", "translate(40,0)")
+      .call(yAxis);
+	  
+	   y.selectAll("text")  
+            .style("text-anchor", "end")
+			.attr("class","label-text")
+            .attr("transform", "rotate(-5)" );
+		   
+      y.append("text")
+      .attr("class", "label")
+      .attr("transform", "rotate(-90)")
+	  .attr("x",-10)
+      .attr("y", 5)
+	  .attr("dx",".5em")
+      .attr("dy", ".8em")
+      .style("text-anchor", "end")
+      .text("UFO reports per country")	 ;
+
+	  
+	  var legend = svgline.append("g")
+        .attr("class", "legend")
+        .attr("x", width - 25)
+        .attr("y", 25)
+        .attr("height", 100)
+        .attr("width", 100);
+
+	 var color_leg=[{"color":"orange","C":"us"},{"color":"pink","C":"ca"},{"color":"green","C":"gb"},
+	 {"color":"purple","C":"au"}];
+	 
+   var l=legend.selectAll("rect")
+   .data(color_leg).enter();
+   
+   l.append("rect")
+  .attr("x", width+35)
+  .attr("y", function(d,i){return 25+15*i;})
+  .attr("width", 10)
+  .attr("height", 10)
+  .style("fill",function(d){return d.color;});
+
+  l.append("text")
+  .attr("x",  width+45)
+  .attr("y", function(d,i){return 25+15*i;})
+  .text(function(d) { return d.C; });
+	  
+first=0;
+	}
+else{
+ d3.select(".svg-line")
+			.select(".yaxis") // change the x axis
+		    .transition()
+            .duration(50)
+            .call(yAxis);
+			
+    // d3.selectAll(".gs").transition().attr("opacity",0);
+	d3.selectAll("#line-chart").selectAll(".lines").remove();
+
+}
+var c=container.append("g")
+	   .attr("transform", "translate(40,0)");
+	   
+	   c.append("path")
+      .attr("class", "lines")
+	  .attr("fill", "none")
+      .attr("stroke", "orange")
+      .attr("stroke-linejoin", "round")
+      .attr("stroke-linecap", "round")
+      .attr("stroke-width", 2.5)
+	  .attr("opacity",1)  
+       .attr("d",line1(experiments["us"]));
+      
+	  c.append("path")
+      .attr("class", "lines")
+	  .attr("fill", "none")
+      .attr("stroke", "pink")
+      .attr("stroke-linejoin", "round")
+      .attr("stroke-linecap", "round")
+      .attr("stroke-width", 2.5)
+	  .attr("opacity",1)  
+       .attr("d",line1(experiments["ca"]));
+	   
+	   c.append("path")
+      .attr("class", "lines")
+	  .attr("fill", "none")
+      .attr("stroke", "green")
+      .attr("stroke-linejoin", "round")
+      .attr("stroke-linecap", "round")
+      .attr("stroke-width", 2.5)
+	  .attr("opacity",1)  
+       .attr("d",line1(experiments["gb"]));
+	   
+	  c.append("path")
+      .attr("class", "lines")
+	  .attr("fill", "none")
+      .attr("stroke", "purple")
+      .attr("stroke-linejoin", "round")
+      .attr("stroke-linecap", "round")
+      .attr("stroke-width", 2.5)
+	  .attr("opacity",1)  
+       .attr("d",line1(experiments["au"]));
+}
+
+
+  function getStats_LC(year)
+  {
+   $.ajax({
+    url:'http://128.119.243.147:3300/UFOreports',
+    type: "GET",
+    dataType: 'json',
+   success: function(data,err) {
+  // set here your svg properties
+                    var data = {};
+					
+					data.Year=year;
+					
+					$.ajax({
+						type: 'POST',
+						data:(data),
+				        contentType: 'application/json',
+						  headers: {
+						  'Content-Type': 'application/x-www-form-urlencoded',
+                           },
+ xhrFields: {
+    withCredentials: true
+  },
+                        url: 'http://128.119.243.147:3300/UFOreports_LineChart',						
+                        success: function(resp) {
+                            console.log('LC: success');
+							draw_Line_Chart(year,resp);
+						 
+							
+                        }
+                    });
+
+         }
+     });                 
+  return 0;
+  }
+  
+  
+  function getStats_LC_loop(year)
+  {
+   $.ajax({
+    url:'http://128.119.243.147:3300/UFOreports',
+    type: "GET",
+    dataType: 'json',
+   success: function(data,err) {
+  // set here your svg properties
+                    var data = {};
+					
+					data.Year=year;
+					$.ajax({
+						type: 'POST',
+						data:(data),
+				        contentType: 'application/json',
+						  headers: {
+		 				  'Content-Type': 'application/x-www-form-urlencoded',
+                          },
+ xhrFields: {
+    withCredentials: true
+  },
+                        url: 'http://128.119.243.147:3300/UFOreports_LineChart',						
+                        success: function(resp) {
+                            console.log('success');
+							
+							draw_Line_Chart(year,resp);
+						    year_id2+=1
+							if(year_id2<years_list.length)
+                               {
+							   sleep(3000).then(() => {
+							   getStats_LC_loop(years_list[year_id2]);
+							   });
+                                   }							
+							
+                        }
+                    });
+
+         }
+             });                 
+  }
+  
+  
+  
+  
+  
+  
+  function getStats_LC2(year)
+  {
+   $.ajax({
+    url:'http://128.119.243.147:3300/UFOreports',
+    type: "GET",
+    dataType: 'json',
+   success: function(data,err) {
+  // set here your svg properties
+                    var data = {};
+					
+					data.Year=year;
+					
+					$.ajax({
+						type: 'POST',
+						data: (data),
+				        contentType: 'application/json',
+						  headers: {
+						  'Content-Type': 'application/x-www-form-urlencoded',
+                          },
+ xhrFields: {
+    withCredentials: true
+  },
+                        url: 'http://128.119.243.147:3300/UFOreports_LineChart2',						
+                        success: function(resp) {
+                            console.log('LC2: success');
+							draw_Line2_Chart(year,resp);
+						 
+							
+                        }
+                    });
+
+         }
+});                 
+  return 0;
+  }
+  
+
+
+ 
+  
+  function getStats_LC2_loop(year)
+  {
+   $.ajax({
+    url:'http://128.119.243.147:3300/UFOreports',
+    type: "GET",
+    dataType: 'json',
+   success: function(data,err) {
+        
+  // set here your svg properties
+                    var data = {};
+					
+					data.Year=year;
+					$.ajax({
+						type: 'POST',
+						data: (data),
+				        contentType: 'application/json',
+						  headers: {
+						  'Content-Type': 'application/x-www-form-urlencoded',
+                         },
+ xhrFields: {
+    withCredentials: true
+  },
+                        url: 'http://128.119.243.147:3300/UFOreports_LineChart2',						
+                        success: function(resp) {
+                            console.log('success');
+							
+							draw_Line2_Chart(year,resp);
+						    year_id3+=1
+							if(year_id3<years_list.length)
+                               {
+							   sleep(3000).then(() => {
+							   getStats_LC2_loop(years_list[year_id3]);
+							   });
+							   						
+							}
+							
+                                   }	
+                        })
+                    }
+               });
+
+               
+  }
+  
+var first1=1;
+var width=600,height=400;
+ //console.log(Object.keys(experiments[0]));
+  var svgline2 = d3.select("#line-chart2")
+           .append("svg")
+		   .attr("class","svg-line2")
+		   .attr("width",width)
+		   .attr("height",height),
+    margin = {top: 20, right: 20, bottom: 30, left: 50};
+	
+    width = svgline.attr("width") - margin.left - margin.right,
+    height = svgline.attr("height") - margin.top - margin.bottom;
+	
+function draw_Line2_Chart(year,experiments)
+{
+console.log("called line chart...");
+  var xScale= d3.scale.ordinal().rangePoints([0, width]);
+  var yScale= d3.scale.linear().range([height, 0]);
+  var y_min=experiments['Min'];
+  var y_max=experiments['Max'];
+  
+  xScale.domain(d3.range(13));
+  yScale.domain([y_min-2,y_max+2]);
+      
+   var xAxis=d3.svg.axis().scale(xScale).orient("bottom").ticks(13);
+   var yAxis=d3.svg.axis().scale(yScale).orient("left").ticks(4);
+
+	var line1 = d3.svg.line()
+    .x(function(d,i) { return xScale(d._id); })
+    .y(function(d) { return yScale(d.count); });
+   
+	var container2=svgline2.append("g").attr("class","parent-to-all");
+	 // x-axis
+	 if(first1==1)
+	{
+   var x=container2.append("g")
+      .attr("class", "xaxis")
+      .attr("transform", "translate(60," + height + ")")
+      .call(xAxis);
+	  
+	  x.selectAll("text")  
+            .style("text-anchor", "end")
+            .attr("dx", ".8em")
+            .attr("dy", ".5em")
+			.attr("class","label-text")
+           // .attr("transform", "rotate(-5)" );
+	  
+      x.append("text")
+      .attr("class", "label")
+      .attr("x", width)
+      .attr("y", -6)
+      .style("text-anchor", "end")
+      .text("Months")
+	  ; 
+  
+  // y-axis
+ var y= container2.append("g")
+      .attr("class", "yaxis")
+	  .attr("transform", "translate(60,0)")
+      .call(yAxis);
+	  
+	   y.selectAll("text")  
+            .style("text-anchor", "end")
+			.attr("class","label-text")
+            .attr("transform", "rotate(-5)" );
+		   
+      y.append("text")
+      .attr("class", "label")
+      .attr("transform", "rotate(-90)")
+	  .attr("x",-10)
+      .attr("y", 5)
+	  .attr("dx",".5em")
+      .attr("dy", ".8em")
+      .style("text-anchor", "end")
+      .text("Total Hrs perCountry")	 ;
+
+	  
+	  var legend = svgline2.append("g")
+        .attr("class", "legend")
+        .attr("x", width - 25)
+        .attr("y", 25)
+        .attr("height", 100)
+        .attr("width", 100);
+
+	 var color_leg=[{"color":"orange","C":"us"},{"color":"pink","C":"ca"},{"color":"green","C":"gb"},
+	 {"color":"purple","C":"au"}];
+	 
+   var l=legend.selectAll("rect")
+   .data(color_leg).enter();
+   
+   l.append("rect")
+  .attr("x", width -35)
+  .attr("y", function(d,i){return 25+15*i;})
+  .attr("width", 10)
+  .attr("height", 10)
+  .style("fill",function(d){return d.color;});
+
+  l.append("text")
+  .attr("x",  width-25)
+  .attr("y", function(d,i){return 25+15*i;})
+  .text(function(d) { return d.C; });
+	  
+first1=0;
+	}
+else{
+ d3.select(".svg-line2")
+			.select(".yaxis") // change the x axis
+		    .transition()
+            .duration(50)
+            .call(yAxis);
+			
+    // d3.selectAll(".gs").transition().attr("opacity",0);
+	d3.selectAll("#line-chart2").selectAll(".lines").remove();
+
+}
+var c=container2.append("g")
+	   .attr("transform", "translate(60,0)");
+	   
+	   c.append("path")
+      .attr("class", "lines")
+	  .attr("fill", "none")
+      .attr("stroke", "orange")
+      .attr("stroke-linejoin", "round")
+      .attr("stroke-linecap", "round")
+      .attr("stroke-width", 2.5)
+	  .attr("opacity",1)  
+       .attr("d",line1(experiments["us"]));
+      
+	  c.append("path")
+      .attr("class", "lines")
+	  .attr("fill", "none")
+      .attr("stroke", "pink")
+      .attr("stroke-linejoin", "round")
+      .attr("stroke-linecap", "round")
+      .attr("stroke-width", 2.5)
+	  .attr("opacity",1)  
+       .attr("d",line1(experiments["ca"]));
+	   
+	   c.append("path")
+      .attr("class", "lines")
+	  .attr("fill", "none")
+      .attr("stroke", "green")
+      .attr("stroke-linejoin", "round")
+      .attr("stroke-linecap", "round")
+      .attr("stroke-width", 2.5)
+	  .attr("opacity",1)  
+       .attr("d",line1(experiments["gb"]));
+	   
+	  c.append("path")
+      .attr("class", "lines")
+	  .attr("fill", "none")
+      .attr("stroke", "purple")
+      .attr("stroke-linejoin", "round")
+      .attr("stroke-linecap", "round")
+      .attr("stroke-width", 2.5)
+	  .attr("opacity",1)  
+       .attr("d",line1(experiments["au"]));
+}
+
+  
+  
+  
+</script>
+
+</body>
+</html>

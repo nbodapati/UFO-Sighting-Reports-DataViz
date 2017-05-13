@@ -1,0 +1,1885 @@
+<!DOCTYPE html>
+<html>
+<meta charset="utf-8">
+
+<body style="background:darkgrey">
+<div id="Parent">
+
+
+<div id="Line-bar-charts">
+<div class="buttons" ></div>
+<div class="chart1" style="position:absolute; top:50px;left:30px;width:320px;height:400px;"></div>
+<div id="chart1-text">
+<p class="sidetext" style="top:350px;left:20px;">Chart1.Select a point/bar (only when you see a probe box in <span style="color:green">Green</span> appear) on the chart and hit a button below for Year,Shape.</p>
+</div>
+<div class="chart2" style="position:absolute; top:20px;left:600px;width:320px;height:400px;"></div>
+<div id="chart2-text">
+<p class="sidetext" style="top:320px;left:620px;">Chart2 updated by selecting buttons on Chart1.</p>
+</div>
+
+
+<div id="svg-chcharts" style="position:absolute; top:450px;left:200px">
+<svg id="ch_chart" style=" position:absolute;left:0px;width:320px;height:400px;"></svg>
+<p class="sidetext" style="top:20px;left:-70px;">Months,Day reports in the year selected.</p>
+<svg id="ch_chart2" style=" position:absolute;left:300px;width:320px;height:400px;"></svg>
+<p class="sidetext" style="top:-30px;left:280px;">Middle:Month,Sentiment reports.</p>
+<svg id="ch_chart3" style=" position:absolute;left:600px;width:320px;height:400px;"></svg>
+<p class="sidetext" style="top:20px;left:900px;">Months,Country reports in the year selected.</p>
+</div>
+</div>
+
+<div>
+<div id="heatmap2" style="position:absolute; top:800px;left:00px"></div>
+<p class="sidetext" style="top:1080px;left:300px;">Months on y-axis,Number of reports in the  hour of the day  in the year chosen.</p>
+<div id="heatmap"style="position:absolute; top:1200px;left:00px"></div>
+<p class="sidetext" style="top:1500px;left:300px;">Months on y-axis,Number of reports in shape  in the year chosen.</p>
+<div id="legend"style="position:relative; top:1400px;left:00px"></div>
+</div>
+
+</div>
+
+<style>
+.pool {
+    fill: #3db1ff;
+    stroke: #4f4f4f;
+}
+</style>
+
+<style>
+body {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.box {
+  font: 10px sans-serif;
+}
+
+.box line,
+.box rect,
+.box circle {
+  fill: steelblue;
+  stroke: #000;
+  stroke-width: 1px;
+}
+
+.box .center {
+  stroke-dasharray: 3,3;
+}
+
+.box .outlier {
+  fill: none;
+  stroke: #000;
+}
+
+.axis {
+  font: 12px sans-serif;
+}
+ 
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+ 
+.xaxis path { 
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+</style>
+
+
+<style type='text/css'>
+        line.slope-line{
+            stroke:green
+        }
+        text.slope-label{
+            fill:blue;
+            font: 15px Arial;
+        }
+    </style>
+	
+<style>
+.button text {
+  font-size: 20px;
+  fill: #eee;
+  pointer-events: none;
+  text-anchor: middle;
+  -moz-user-select: none;
+  -webkit-user-select: none;
+  -ms-user-select: none;
+}
+
+div.tooltip {	
+    position: absolute;			
+    text-align: center;			
+    width: 120px;					
+    height: 50px;					
+    padding: 2px;				
+    font: 12px sans-serif;		
+    background: lightgreen;	
+    border: 0px;		
+    border-radius: 8px;			
+    pointer-events: none;			
+}
+
+</style>
+
+<style>
+    body   { color: #444; background: #f3f3f3; font: normal 12px "Adobe Garamond Pro", "Palatino", serif; margin: 2em; }
+    header { margin: 0 0 20px 220px; border-bottom: 1px solid #6c6c6c; width: 360px; position: relative; }
+    h1     { font-size: 16px; font-weight: normal; text-shadow: #fff 0 1px 0; margin: 0 0 0 0; padding: 0; }
+    small  { color: #a3a3a3; font-size: 10px; position: absolute; top: 0.6em; right: 0;}
+    a      { color: #a3a3a3; }
+    text.label { fill: #444; }
+    text.label.start { text-anchor: end; }
+    line.slope { stroke: #444; stroke-width: 1; }
+    .missing text.label { display: none; }
+    .missing line.slope { display: none; }
+    .over text.label { fill: #bb2629; font-size: 14px !important; font-weight: bold; }
+    .over line.slope { stroke: #bb2629; stroke-width: 2; }
+  </style>
+
+<script type="text/javascript" src="http://mbostock.github.com/d3/d3.js"></script>
+<script>
+var d3_2=d3;
+</script>
+
+ 
+
+<script src="https://d3js.org/d3.v4.min.js"></script>
+
+<script>
+var new_d3=d3;
+</script>
+
+<script type="text/javascript" src="http://mbostock.github.com/d3/d3.js"></script>
+<script>
+var d3_2=d3;
+</script>
+
+
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script>
+var old_d3=d3;
+</script>
+
+
+<script src="http://code.jquery.com/jquery-2.1.4.min.js" charset="utf-8"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+
+<script src="https://dc-js.github.io/dc.js/js/crossfilter.js"></script>
+<script src="https://dc-js.github.io/dc.js/js/dc.js"></script>
+ <script type='text/javascript' src="./js/slopegraph.js"></script>
+ <script type='text/javascript' src="./js/d3.parcoords.js"></script>
+ <script src="./js/d3.svg.multibrush.js"></script>
+ <script src="./js/box.js"></script>
+ <script src="./js/circularHeatChart.js"></script>
+ 
+ <script src="//cdnjs.cloudflare.com/ajax/libs/topojson/1.6.9/topojson.min.js"></script>
+
+<script src="./js/datamaps.world.min.js"></script>
+<script src="node_modules/datamaps/dist/datamaps.world.min.js"></script>
+
+ 
+ <link rel="stylesheet" type="text/css" href="./js/d3.parcoords.css">
+ <link rel="stylesheet" type="text/css" href="./js/style.css">
+ <link rel="stylesheet" type="text/css" href="./js/sequences.css"/>
+<a href="" class="next" style="position:absolute; top:350px; left:1200px;"><span style="font-size:15px;color:pink">Next</span></a>
+<a href="" class="prev" style="position:absolute; top:400px; left:1200px;"><span style="font-size:15px;color:pink">Previous</span></a>
+  
+
+
+<style>
+h1.heading{
+position:absolute;
+top:10px;
+left:350px;
+color: yellow;
+stroke:  #4f4f4f;
+font-size: 150%;
+font-family:verdana;
+border: 1px solid powderblue;
+padding: 20px;
+}
+p.sidetext{
+position:absolute;
+color:brown;
+font-size: 15px;
+font-family:courier;
+}
+
+p.introduction{
+position:absolute;
+top:100px;
+left:40px;
+color:brown;
+font-size: 15px;
+font-family:courier;
+}
+node-text {
+  font: 24px "Helvetica Neue", Helvetica, Arial, sans-serif;
+  text-anchor: middle;
+  pointer-events: none;
+}
+
+node-circle {
+  fill: #ccc;
+}
+
+.node:hover circle {
+  fill: orange;
+}
+ </style>
+ 
+ <style>
+      .heat-box {
+        stroke: #E6E6E6;
+        stroke-width: 2px;
+      }
+	  .next{
+position: absolute;			
+    text-align: center;			
+    width: 60px;					
+    height: 20px;
+    padding: 2px;				
+    font: 12px sans-serif;		
+    background:green;	
+    border: 0px;		
+    border-radius: 8px;			
+    pointer-events: cursor;
+}
+
+.prev{
+position: absolute;			
+    text-align: center;			
+    width: 60px;					
+    height: 20px;
+    padding: 2px;				
+    font: 12px sans-serif;		
+    background:green;	
+    border: 0px;		
+    border-radius: 8px;			
+    pointer-events: cursor;
+}
+    </style>
+ 
+<script type="text/javascript">
+
+$( document ).ready(function() {
+    var caseList = [
+    'index.html',
+	'index1.html',
+	'index2.html',
+	'index3.html',
+	'index4.html',
+	'index5.html'
+];
+
+    current=$(location).attr('pathname')
+	         .substr($(location).attr('pathname')
+			 .lastIndexOf("/")+1); // get current page: just last part - page name and extension
+   
+    if(current=="")
+	   current="index.html";
+	   
+	console.log(current);
+    if($.inArray(current, caseList)!==-1) { //check if it is in array
+        index=$.inArray(current, caseList);
+    }
+    //navigate thorough pages...
+    $( ".next" ).click(function() {
+    if(index<caseList.length){
+    var n=caseList[index+1];
+	d3.select(".next").attr("href",n);
+
+    }
+    });
+
+    $( ".prev" ).click(function() {
+    if(index>=0){
+    var p=caseList[index-1];
+    d3.select(".prev").attr("href",p);
+    }
+    });
+
+    });
+
+ var d3=old_d3;
+ //console.log(JSON.stringify(new_d3));
+ var years_list;
+ var d3_1=new_d3;
+ 
+ function rangefn(start, stop, step){
+  var a=[start], b=start;
+  while(b<stop){b+=step;a.push(b)}
+  return a;
+};
+
+	
+///////////////////////////////////////////////////////////////////////////////////////
+//Draw sunburst chart for months--time--(duration?) and more.
+   // set here your svg properties
+   getStats_sb(1910);
+   getStats_heatmap(1910);
+   
+  function getStats_sb(year){
+   $.ajax({
+    url:'http://128.119.243.147:3300/UFOreports',
+    type: "GET",
+    dataType: 'json',
+   success: function(data,err) {
+	     var data = {};	
+				 data.Year=year;
+					$.ajax({
+						type: 'POST',
+						data:(data),
+				        contentType: 'application/json',
+ 			  headers: {
+			  'Content-Type': 'application/x-www-form-urlencoded',
+                          },
+ xhrFields: {
+    withCredentials: true
+  },
+                        url: 'http://128.119.243.147:3300/UFOreports_sunburst',						
+                        success: function(resp) {
+                        console.log('success');					
+			draw_sunburst_chart(resp);											
+               },
+
+                    });
+
+     	 }
+  }) 
+	  }	  
+
+function getStats_heatmap(year){
+   $.ajax({
+url:'http://128.119.243.147:3300/UFOreports',
+    type: "GET",
+    dataType: 'json',
+   success: function(data,err) {
+	     var data = {};	
+				 data.Year=year;
+					$.ajax({
+						type: 'POST',
+						data: (data),
+				        contentType: 'application/json',
+ 			  headers: {
+			 'Content-Type': 'application/x-www-form-urlencoded',
+                          },
+ xhrFields: {
+    withCredentials: true
+  },
+                        url: 'http://128.119.243.147:3300/UFOreports_heatmap',						
+                        success: function(resp) {
+                        console.log('success');					
+			draw_heatmap_chart(resp);									
+                        },
+
+                    });	  
+	  }	  
+})
+}
+
+	  
+function rangefn(start, stop, step){
+  var a=[start], b=start;
+  while(b<stop){b+=step;a.push(b)}
+  return a;
+};
+
+function draw_heatmap_chart(experiments)
+{
+var chart = dc.heatMap("#heatmap");
+var ndx    = crossfilter(experiments),
+      runDim = ndx.dimension(function(d) { return [d.Run, +d.Expt]; }),
+      runGroup = runDim.group().reduceSum(function(d) { return +d.Speed; });
+ 
+ chart
+    .width(42 * 30 + 80)
+    .height(45 * 5 + 40)
+    .dimension(runDim)
+    .group(runGroup)
+    .keyAccessor(function(d) { return d.key[0]; })
+    .valueAccessor(function(d) { return +d.key[1]; })
+    .colorAccessor(function(d) { return +d.value; })
+    .title(function(d) {
+        return "Shape:   " + d.key[0] + "\n" +
+               "Month:  " + d.key[1] + "\n" +
+               "Num Reports: " + ( d.value) ;})
+    .colors(["blue","red","purple","pink"])
+    .calculateColorDomain()
+	
+  chart.render();
+  
+  d3.selectAll(".legend").remove();
+  
+var legend = d3.select("#legend").append("svg")
+        .attr("class", "legend")
+
+        .attr("height", 400)
+        .attr("width", 400);
+		
+	 var color_leg=[{"color":"blue","C":"LOW"},{"color":"red","C":"MED"},{"color":"pink","C":"HIGH"},
+	 ];
+	 
+   var l=legend.selectAll("rect")
+   .data(color_leg).enter();
+   
+   l.append("rect")
+  .attr("x", 50)
+  .attr("y", function(d,i){return 25+15*i;})
+  .attr("width", 10)
+  .attr("height", 10)
+  .style("fill",function(d){return d.color;});
+
+  l.append("text")
+  .attr("x",  60)
+  .attr("y", function(d,i){return 25+15*i;})
+  .text(function(d) { return d.C; });
+}
+
+
+
+function draw_sunburst_chart(json){
+var experiments=json;
+var chart = dc.heatMap("#heatmap2");
+var ndx    = crossfilter(experiments),
+      runDim = ndx.dimension(function(d) { return [d.Run, +d.Expt]; }),
+      runGroup = runDim.group().reduceSum(function(d) { return +d.Speed; });
+ 
+ chart
+    .width(42 * 30 + 80)
+    .height(45 * 5 + 40)
+    .dimension(runDim)
+    .group(runGroup)
+    .keyAccessor(function(d) { return d.key[0]; })
+    .valueAccessor(function(d) { return +d.key[1]; })
+    .colorAccessor(function(d) { return +d.value; })
+    .title(function(d) {
+        return "Month:   " + d.key[0] + "\n" +
+               "TimeOfDay:  " + d.key[1] + "\n" +
+               "NumREports: " + ( d.value);})
+    .colors(["blue","red","purple","pink"])
+    .calculateColorDomain()
+	.legend(dc.legend())
+	
+  chart.render();
+}
+	
+ 
+//////////////////////////////////////////////////////////////////////////////////////
+//Circular HEat chart.
+//Circular heat chart --month country
+function getStats_chChart3(Year){
+   $.ajax({
+url:'http://128.119.243.147:3300/UFOreports',
+    type: "GET",
+    dataType: 'json',
+   success: function(data,err) {
+        years_list=data;
+		years_list.sort(function(a, b) {
+             return parseFloat(a) - parseFloat(b);});
+			 
+  // set here your svg properties
+                    var data = {};	
+                    data.Year=Year;
+					
+					$.ajax({
+						type: 'POST',
+						data: (data),
+				        contentType: 'application/json',
+ 			  headers: {
+			  'Content-Type': 'application/x-www-form-urlencoded',
+                          },
+ xhrFields: {
+    withCredentials: true
+  },
+                        url: 'http://128.119.243.147:3300/UFOreports_chChart3',						
+                        success: function(resp) {
+                            console.log('success');
+							//console.log(JSON.stringify(resp));
+							var radlabels=["January", "February", "March", "April", "May", "June", "July","August","September","October","November","December"];
+							var seglabels=["ca","gb","us","au"];
+							var clabels=["white","red"];
+							var nseg=4;
+							draw_circularHeat_chart(resp,radlabels,seglabels,clabels,nseg,"#ch_chart3");						
+							
+                        }
+                    });
+
+         }
+});    
+
+}
+
+getStats_chChart3(2012);
+
+//Circular HEat chart. --month sentiment
+function getStats_chChart2(Year){
+   $.ajax({
+url:'http://128.119.243.147:3300/UFOreports',
+    type: "GET",
+    dataType: 'json',
+   success: function(data,err) {
+        years_list=data;
+		years_list.sort(function(a, b) {
+             return parseFloat(a) - parseFloat(b);});
+			 
+  // set here your svg properties
+                    var data = {};	
+                    data.Year=Year;
+					
+					$.ajax({
+						type: 'POST',
+						data: (data),
+				        contentType: 'application/json',
+ 			  headers: {
+			  'Content-Type': 'application/x-www-form-urlencoded',
+                          },
+                        url: 'http://128.119.243.147:3300/UFOreports_chChart2',						
+                        success: function(resp) {
+                            console.log('success');
+			//console.log(JSON.stringify(resp));
+			var radlabels=["January", "February", "March", "April", "May", "June", "July","August","September","October","November","December"];
+			var seglabels=["sent-0","sent-1"];
+			var clabels=["white","green"];
+			var nseg=2;
+		        draw_circularHeat_chart(resp,radlabels,seglabels,clabels,nseg,"#ch_chart2");						
+							
+                        },
+
+                    });
+
+         }
+   });     
+
+}
+
+getStats_chChart2(2012);
+
+function getStats_chChart(Year){
+   $.ajax({
+url:'http://128.119.243.147:3300/UFOreports',
+    type: "GET",
+    dataType: 'json',
+   success: function(data,err) {
+        years_list=data;
+		years_list.sort(function(a, b) {
+             return parseFloat(a) - parseFloat(b);});
+			 
+  // set here your svg properties
+                    var data = {};	
+                    data.Year=Year;
+					
+					$.ajax({
+						type: 'POST',
+						data:(data),
+				        contentType: 'application/json',
+ 			  headers: {
+			  'Content-Type': 'application/x-www-form-urlencoded',
+                          },
+                        url: 'http://128.119.243.147:3300/UFOreports_chChart',						
+                        success: function(resp) {
+                            console.log('success');
+							//console.log(JSON.stringify(resp));
+											
+							var radlabels=["January", "February", "March", "April", "May", "June", "July","August","September","October","November","December"];
+							var seglabels=rangefn(1,31,1);
+							var clabels=["white", "purple"];
+							var nseg=31;
+							draw_circularHeat_chart(resp,radlabels,seglabels,clabels,nseg,"#ch_chart");	
+                        },
+
+                    });
+
+         }
+   });     
+
+}
+
+getStats_chChart(2012);
+
+function draw_circularHeat_chart(data,radlabels,seglabels,clabels,nseg,chart_id){
+var chart = circularHeatChart()
+    .segmentHeight(11)
+    .innerRadius(15)
+    .numSegments(nseg)
+	.range(clabels)
+    .radialLabels(radlabels)
+    .segmentLabels(seglabels)
+   // .margin({top: 20, right: 0, bottom: 20, left: 480});
+	
+	d3.select(chart_id)
+	.append("svg").attr("class","ch_chart-svg")
+    .selectAll('svg')
+    .data([data])
+    .enter()
+    .append('svg')
+    .call(chart);
+	
+	/* Add a mouseover event */
+d3.selectAll(chart_id+" path").on('mouseover', function() {
+    var d = d3.select(this).data()[0];
+	//console.log(JSON.stringify(d)); 
+    div1.transition()
+			    .duration(200) 
+				.style("background","lightgreen")
+			    .style("opacity", 1); 
+				div1.html("<span><b><font face=\"verdana\">Num_Reports: </font>"+d+"</b><br/></span>")
+				.style("left", (d3.event.pageX) + "px")	
+				 .style("top", (d3.event.pageY - 28) + "px");
+				 })
+		
+d3.selectAll("#ch_chart path").on("mouseout",function(d){
+	     
+			 div1.transition()
+			    .duration(200)
+			    .style("opacity", 0); 
+			
+			})
+		
+	
+ }
+ //===============================================================================================================
+//Line-bar-charts
+var selected={};
+selected.b1="Year";
+selected.v1=2012;
+selected.b2="Country";
+
+var div1 = d3.select("#Parent").append("div")	
+              .attr("class", "tooltip")				
+              .style("opacity", 0);
+
+var div2 = d3.select(".chart1").append("div")	
+              .attr("class", "tooltip")				
+              .style("opacity", 0);
+
+
+var labels=["Year","Country","Shape"];
+
+var w= 680;
+var h= 50;
+var svg_button= d3.select(".buttons")
+            .append("svg")
+            .attr("width",w)
+            .attr("height",h);
+			
+var allButtons= svg_button.append("g")
+                    .attr("id","allButtons") 
+
+					
+//groups for each button (which will hold a rect and text)
+var buttonGroups= allButtons.selectAll(".button")
+                        .data(labels)
+                        .enter()
+                        .append("g")
+                        .attr("class","button1")
+                        .style("cursor","pointer")
+						 .on("click",function(d) {
+                                updateButtonColors(d3.select(this), d3.select(this.parentNode))
+								})
+					     .on("mouseover", function() {
+			                   if (d3.select(this).select("rect").attr("fill") != pressedColor) {
+							    d3.select(this)
+								.select("rect")
+								.attr("fill",hoverColor);
+						       }
+					        })
+					    .on("mouseout", function() {
+					     	if (d3.select(this).select("rect").attr("fill") != pressedColor) {
+					     		d3.select(this)
+								.select("rect")
+								.attr("fill",defaultColor);
+						      }
+					      })
+									
+						
+var bWidth= 80; //button width
+var bHeight= 25; //button height
+var bSpace= 10; //space between buttons
+var x0= 80; //x offset
+var y0= 25; //y offset
+
+//adding a rect to each button group
+//sidenote: rx and ry give the rects rounded corners
+buttonGroups.append("rect")
+            .attr("class","buttonRect1")
+            .attr("width",bWidth)
+            .attr("height",bHeight)
+            .attr("x",function(d,i) {
+                return x0+(bWidth+bSpace)*i;
+            })
+            .attr("y",y0)
+            .attr("rx",5) 
+            .attr("ry",5)
+            .attr("fill","steelblue")
+
+//adding text to each button group, centered within the button rect
+buttonGroups.append("text")
+            .attr("class","buttonText1")
+            .attr("font-family","FontAwesome")
+            .attr("x",function(d,i) {
+                return x0 + (bWidth+bSpace)*i + bWidth/2;
+            })
+            .attr("y",y0+bHeight/2)
+            .attr("text-anchor","middle")
+            .attr("dominant-baseline","central")
+            .attr("fill","white")
+            .text(function(d) {return d;})                            
+
+var defaultColor= "#7777BB"
+var hoverColor= "#0000ff"
+var pressedColor= "#000077"
+ 
+function updateButtonColors(button, parent) { //when buttons1 are clicked.
+    parent.selectAll("rect")
+            .attr("fill",defaultColor)
+
+    button.select("rect")
+            .attr("fill",pressedColor)
+			
+	//d3.select(".svg-counts").selectAll(".parent-to-all").remove();
+	d3.select(".svg-counts").selectAll(".lines").remove();
+	d3.select(".svg-counts").selectAll(".circles").remove();
+	d3.select(".svg-counts").selectAll(".bars").remove();
+	d3.select(".svg-counts").selectAll(".label").remove();
+	d3.select(".svg-counts").selectAll(".label-text").remove();
+	d3.select(".chart1").select(".buttons2").remove();
+	
+	selected.b1=button[0][0].__data__;
+	getStats(button[0][0].__data__);		
+    //console.log(JSON.stringify(button[0][0]),button[0][0].__data__);	
+    if(button[0][0].__data__ =="Year"||button[0][0].__data__ =="Shape")
+    add_buttons2(button[0][0].__data__);  	
+}
+  
+function getStats(message)
+  {
+   $.ajax({
+url:'http://128.119.243.147:3300/UFOreports',
+    type: "GET",
+    dataType: 'json',
+   success: function(data,err) {
+    console.log("s-1");    
+  // set here your svg properties
+                    var data = {};
+					data.type="Counts";
+					data.message=message;
+					console.log(message);
+					$.ajax({
+						type: 'POST',
+						data: (data),
+				        contentType: 'application/json',
+ 			  headers: {
+			  'Content-Type': 'application/x-www-form-urlencoded',
+                          },
+                        url: 'http://128.119.243.147:3300/UFOreports',						
+                        success: function(resp) {
+                            console.log('success-2');
+							//getMatchStats("Year",2012,"Month");
+   							draw_count_charts(message,resp);
+							
+                        }
+                    });
+
+         }
+  });
+                   
+  }
+  getStats("Year");
+ //Set up svg canvas --counts plots. 
+ var margin = {top: 20, right: 20, bottom: 30, left: 40},
+    width = 580 - margin.left - margin.right,
+    height = 300 - margin.top - margin.bottom;
+	
+   // Adds the svg canvas
+   var	svg = d3.select(".chart1")
+	.append("svg")
+	 .attr("class","svg-counts")
+		.attr("width", width + margin.left + margin.right)
+		.attr("height", height + margin.top + margin.bottom)
+	    .append("g")
+		.attr("transform", "translate(" + margin.right+"," + margin.bottom + ")") ;
+ 
+
+
+//For the button-2
+
+
+function add_buttons2(m1) 
+{
+if(m1=="Year")
+{
+  var labels=["Month","Country"];
+}
+else if(m1=="Country"){
+var labels=["Year","Country"];
+}
+else{
+var labels=["Year","Country","Country-Year"];
+}
+					
+//groups for each button (which will hold a rect and text)
+var W=80;
+var H=height;
+var allButtons2= d3.select(".chart1")
+            .append("div")
+			.attr("class","div-buttons2")
+			.append("svg")
+			.attr("width",W)
+			.attr("height",H)
+			.attr("class","buttons2");
+			
+var buttonGroups2= allButtons2
+   					   .selectAll(".button2")
+                        .data(labels)
+                        .enter()
+                        .append("g")
+                        .attr("class","button2")
+                        .style("cursor","pointer")
+						 .on("click",function(d) {
+                                updateButtonColors2(d3.select(this), d3.select(this.parentNode))
+								})
+					     .on("mouseover", function() {
+			                   if (d3.select(this).select("rect").attr("fill") != pressedColor) {
+							    d3.select(this)
+								.select("rect")
+								.attr("fill",hoverColor);
+						       }
+					        })
+					    .on("mouseout", function() {
+					     	if (d3.select(this).select("rect").attr("fill") != pressedColor) {
+					     		d3.select(this)
+								.select("rect")
+								.attr("fill",defaultColor);
+						      }
+					      })
+									
+						
+var bWidth= 50; //button width
+var bHeight= 25; //button height
+var bSpace= 10; //space between buttons
+var x0= 10; //x offset
+var y0= 25; //y offset
+
+//adding a rect to each button group
+//sidenote: rx and ry give the rects rounded corners
+buttonGroups2.append("rect")
+            .attr("class","buttonRect2")
+            .attr("width",bWidth)
+            .attr("height",bHeight)
+            .attr("x",x0)
+            .attr("y",function(d,i) {
+                return y0+(bHeight+bSpace)*i;})
+            .attr("rx",5) 
+            .attr("ry",5)
+            .attr("fill","steelblue")
+
+//adding text to each button group, centered within the button rect
+buttonGroups2.append("text")
+            .attr("class","buttonText1")
+            .attr("font-family","FontAwesome")
+            .attr("x",x0+bWidth/2)
+            .attr("y",function(d,i) {
+                return y0+(bHeight+bSpace)*i+bHeight/2;})
+            .attr("text-anchor","middle")
+            .attr("dominant-baseline","central")
+            .attr("fill","white")
+            .text(function(d) {return d;})                            
+
+var defaultColor= "#7777BB"
+var hoverColor= "#0000ff"
+var pressedColor= "#000077"
+
+function updateButtonColors2(button, parent) {
+    parent.selectAll("rect")
+            .attr("fill",defaultColor)
+
+    button.select("rect")
+            .attr("fill",pressedColor)
+		
+	
+	//getStats(button[0][0].__data__);	
+    selected.b2= button[0][0].__data__;
+ 	
+    //console.log(JSON.stringify(button[0][0]),button[0][0].__data__,);			
+     Update_chart2();
+	 
+	}
+}
+
+function draw_Year_chart(experiments)
+{
+experiments.sort(function(a, b) {
+    return parseFloat(a._id) - parseFloat(b._id);
+});
+  selected.b1="Year";
+  selected.v1=2012;
+  selected.b2="Month";
+  Update_chart2();
+  
+  
+  var xScale= d3.scale.linear().range([0, width-20]);
+  var yScale= d3.scale.linear().range([height, 0]);
+  
+  xScale.domain([d3.min(experiments,function(d){return +d._id}),d3.max(experiments,function(d){return +d._id})]);
+  yScale.domain([d3.min(experiments,function(d){return +d.count}),d3.max(experiments,function(d){return +d.count})]);
+      
+   var xAxis=d3.svg.axis().scale(xScale).orient("bottom").ticks(10);
+   var yAxis=d3.svg.axis().scale(yScale).orient("left").ticks(20);
+
+	var line1 = d3.svg.line()
+    .x(function(d,i) { return xScale(d._id); })
+    .y(function(d) { return yScale(d.count); });
+   
+	var container=svg.append("g").attr("class","parent-to-all");
+	 // x-axis
+   var x=container.append("g")
+      .attr("class", "xaxis")
+      .attr("transform", "translate(40," + height + ")")
+      .call(xAxis);
+	  
+	  x.selectAll("text")  
+            .style("text-anchor", "end")
+            .attr("dx", ".8em")
+            .attr("dy", ".5em")
+			.attr("class","label-text")
+           // .attr("transform", "rotate(-5)" );
+	  
+      x.append("text")
+      .attr("class", "label")
+      .attr("x", width)
+      .attr("y", -6)
+      .style("text-anchor", "end")
+      .text("Years")
+	  ; 
+  
+  // y-axis
+ var y= container.append("g")
+      .attr("class", "yaxis")
+	  .attr("transform", "translate(40,0)")
+      .call(yAxis);
+	  
+	   y.selectAll("text")  
+            .style("text-anchor", "end")
+			.attr("class","label-text")
+            .attr("transform", "rotate(-5)" );
+		   
+      y.append("text")
+      .attr("class", "label")
+      .attr("transform", "rotate(-90)")
+	  .attr("x",4)
+      .attr("y", 5)
+	  .attr("dx",".5em")
+      .attr("dy", ".8em")
+      .style("text-anchor", "end")
+      .text("UFO reports")	 ;
+
+	  var c=container.append("g")
+	   .attr("transform", "translate(40,0)");
+	  
+       
+	    c.selectAll(".circles")
+       .data(experiments)
+       .enter()
+       .append("circle")
+	   .attr("class","circles")
+       .attr("r","3px")
+       .attr("cx",function(d){return xScale(d._id);})
+       .attr("cy",function(d){return yScale(d.count);})
+ 	    .attr("fill","gold")
+		.on("click",function(d){ 
+                                                          
+          d3.select(this)
+            .style("fill","lightcoral")
+            .style("stroke","red");		
+	      console.log(JSON.stringify(d3.select(this)));
+		   selected.v1=d3.select(this)[0][0].__data__._id;
+		   Update_chart2();
+		   
+		   //call the function to draw color heat chart.
+		   d3.selectAll('.ch_chart-svg').remove();
+		   getStats_chChart(selected.v1);
+		   getStats_chChart2(selected.v1);
+		   getStats_chChart3(selected.v1); 
+		   
+		   d3.select("#sunburst").select("svg").remove();
+           getStats_sb(selected.v1);
+           getStats_heatmap(selected.v1); //sravika
+		   
+            d3.select("#container").remove();
+			d3.select("#bubble").remove();
+			
+			d3.select("#Choropleth")
+			.append("div")
+			.attr("id","container")
+			.style("width","800px") 
+            .style("height","500px");
+				
+ 		   
+        })
+		
+		.on("mouseover",function(d){
+		d3.select(this).transition().attr('r','5px');
+	    	 div1.transition()
+			    .duration(200)
+			    .style("opacity", .9); 
+				div1.html("<span><font face=\"verdana\">Country: </font>"+d._id+"<br/>"+
+			
+						 "<font face=\"verdana\">Num Reports: </font>"+d.count+"<br/></span>")
+				.style("left", (d3.event.pageX) + "px")	
+				 .style("top", (d3.event.pageY - 28) + "px");
+				 })
+			
+	   .on("mouseout",function(d){
+        d3.select(this).transition().attr('r','5px');		
+		div1.transition()
+			    .duration(200)
+			    .style("opacity", 0); 
+			
+			})		;
+	  
+	   c.append("path")
+      .attr("class", "lines")
+	  .attr("fill", "none")
+      .attr("stroke", "steelblue")
+      .attr("stroke-linejoin", "round")
+      .attr("stroke-linecap", "round")
+      .attr("stroke-width", 2.5)
+	  .attr("opacity",1)  
+       .attr("d",line1(experiments));
+      
+	
+	}
+  
+function draw_Country_chart(experiments)
+{
+   selected.b1="Country";
+   selected.v1="us";
+   selected.b2="Year";
+   Update_chart2();
+   
+  var xScale= d3.scale.ordinal().rangePoints([0, width-20]);
+  var yScale= d3.scale.linear().range([height, 0]);
+  console.log(JSON.stringify(experiments));
+  
+  var dkeys=[];
+  for (exp in experiments)
+  {
+  dkeys.push(experiments[exp]._id);
+  }
+   
+  // console.log(dkeys);
+   
+  //console.log(d3.extent(experiments,function(d){return d._id;}));
+  xScale.domain(dkeys);
+  yScale.domain([-10,d3.max(experiments,function(d){return +d.count})]);
+    
+   var xAxis=d3.svg.axis().scale(xScale).orient("bottom").ticks(4);
+   var yAxis=d3.svg.axis().scale(yScale).orient("left").ticks(20);
+
+	var container=svg.append("g").attr("class","parent-to-all");
+	 
+	 // x-axis
+   var x=container.append("g")
+      .attr("class", "xaxis")
+      .attr("transform", "translate(40," + height + ")")
+      .call(xAxis);
+	  
+	  x.selectAll("text")  
+            .style("text-anchor", "end")
+            .attr("dx", ".8em")
+            .attr("dy", ".5em")
+			.attr("class","label-text")
+           // .attr("transform", "rotate(-5)" );
+	  
+      x.append("text")
+      .attr("class", "label")
+      .attr("x", width-20)
+      .attr("y", -6)
+      .style("text-anchor", "end")
+      .text("Countries")
+	  ; 
+  
+  // y-axis
+ var y= container.append("g")
+      .attr("class", "yaxis")
+	  .attr("transform", "translate(40,0)")
+      .call(yAxis);
+	  
+	   y.selectAll("text")  
+            .style("text-anchor", "end")
+			.attr("class","label-text")
+            .attr("transform", "rotate(-5)" );
+		   
+      y.append("text")
+      .attr("class", "label")
+      .attr("transform", "rotate(-90)")
+	  .attr("x",4)
+      .attr("y", 5)
+	  .attr("dx",".5em")
+      .attr("dy", ".8em")
+      .style("text-anchor", "end")
+      .text("AllYear UFO reports")
+	 ;
+
+var bars=container.append("g")
+	     .attr("transform", "translate(40,0)")  
+         .selectAll(".gs")
+         .data(experiments)
+         .enter()
+		 .append("g").attr("class","gs");
+		 
+    bars.selectAll(".bars")
+	     .data(experiments)
+		 .enter()
+	    .append("rect")
+	    .attr("class", "bars") 
+	    .attr("x",function(d){ return xScale(d._id);})
+		.attr("y",function(d){ return yScale(d.count);})
+        .attr("width",30)
+		.attr("height",function(d){ return height-yScale(d.count);}) 
+	     .style("fill","steelblue")
+		 .on("click",function(d){
+		 console.log(JSON.stringify(d3.select(this)));
+		  selected.v1=d3.select(this)[0][0].__data__._id;
+		   selected.b2="Year"; 
+		   Update_chart2();
+		   
+		 })
+		 .on("mouseover",function(d){
+	    	 div1.transition()
+			    .duration(200)
+			    .style("opacity", .9); 
+				div1.html("<span><font face=\"verdana\">Country: </font>"+d._id+"<br/>"+
+			
+						 "<font face=\"verdana\">Num Reports: </font>"+d.count+"<br/></span>")
+				.style("left", (d3.event.pageX) + "px")	
+				 .style("top", (d3.event.pageY - 28) + "px");
+				 })
+			
+	   .on("mouseout",function(d){
+			 div1.transition()
+			    .duration(200)
+			    .style("opacity", 0); 
+			
+			})		;
+	 
+}
+ 
+function draw_Shape_chart(experiments)
+{
+selected.b1="Shape";
+selected.v1="light";
+selected.b2="Year";
+Update_chart2();
+
+  var yScale= d3.scale.ordinal().rangePoints([height,0]);
+  var xScale= d3.scale.linear().range([0, width-20]);
+  console.log(JSON.stringify(experiments));
+  
+  var dkeys=[];
+  for (exp in experiments)
+  {
+  dkeys.push(experiments[exp]._id);
+  }
+   
+  yScale.domain(dkeys);
+  xScale.domain([-100,d3.max(experiments,function(d){return +d.count})]);
+    
+   var xAxis=d3.svg.axis().scale(xScale).orient("bottom").ticks(10);
+   var yAxis=d3.svg.axis().scale(yScale).orient("left").ticks(dkeys.length);
+
+	var container=svg.append("g").attr("class","parent-to-all");
+	 
+	 // x-axis
+   var x=container.append("g")
+      .attr("class", "xaxis")
+      .attr("transform", "translate(40," + height + ")")
+      .call(xAxis);
+	  
+	  x.selectAll("text")  
+            .style("text-anchor", "end")
+            .attr("dx", ".8em")
+            .attr("dy", ".5em")
+			.attr("class","label-text")
+           // .attr("transform", "rotate(-5)" );
+	  
+      x.append("text")
+      .attr("class", "label")
+      .attr("x", width)
+      .attr("y", -6)
+      .style("text-anchor", "end")
+      .text("AllYear UFO reports")
+	  ; 
+  
+  // y-axis
+ var y= container.append("g")
+      .attr("class", "yaxis")
+	  .attr("transform", "translate(40,0)")
+      .call(yAxis);
+	  
+	   y.selectAll("text")  
+            .style("text-anchor", "end")
+			.attr("class","label-text")
+			.attr("dy", ".15em")
+			.attr("font-size","12px")
+            .attr("transform", "rotate(-5)" );
+		   
+      y.append("text")
+      .attr("class", "label")
+      .attr("transform", "rotate(-90)")
+	  .attr("x",4)
+      .attr("y", 5)
+	  .attr("dx","-.50em")
+      .attr("dy", ".80em")
+      .style("text-anchor", "end")
+      .text("Shapes")
+	 ;
+
+var bars=container.append("g")
+	     .attr("transform", "translate(40,0)")  
+         .selectAll(".gs")
+         .data(experiments)
+         .enter()
+		 .append("g").attr("class","gs");
+		 
+    bars.selectAll(".bars")
+	     .data(experiments)
+		 .enter()
+	    .append("rect")
+	    .attr("class", "bars") 
+	    .attr("x",0)
+		.attr("y",function(d){ return yScale(d._id)})
+        .attr("width",function(d){ return xScale(d.count);})
+		.attr("height",4) 
+	     .style("fill","steelblue")
+		 .on("click",function(d){
+		    d3.select(".svg-counts").selectAll(".bars")
+            .style("fill", function(d) { return "steelblue"; });                                                
+          d3.select(this)
+            .style("fill","lightcoral")
+            .style("stroke","red");		
+		 //console.log(JSON.stringify(d3.select(this)));
+		 selected.v1=d3.select(this)[0][0].__data__._id;
+		 })
+		 .on("mouseover",function(d){
+	    	 div1.transition()
+			    .duration(200)
+			    .style("opacity", .9); 
+				div1.html("<span><font face=\"verdana\">Shape: </font>"+d._id+"<br/>"+
+		      		 "<font face=\"verdana\">Num Reports: </font>"+d.count+"<br/></span>")
+				.style("left", (d3.event.pageX) + "px")	
+				 .style("top", (d3.event.pageY - 28) + "px");
+				 })
+			
+	   .on("mouseout",function(d){
+			 div1.transition()
+			    .duration(200)
+			    .style("opacity", 0); 
+			
+			})		;
+	 
+}
+
+ 
+function draw_count_charts(chosen_button,experiments)
+{
+if(chosen_button=="Year")
+   draw_Year_chart(experiments);
+else if(chosen_button=="Country")
+    draw_Country_chart(experiments);
+	
+else if(chosen_button=="Shape")
+    draw_Shape_chart(experiments);		
+}
+
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////
+function Update_chart2()
+{
+console.log(JSON.stringify(selected));
+getMatchStats(selected.b1,selected.v1,selected.b2);
+
+}
+
+var years_list=[];
+function getMatchStats(message,value,m2)
+  {
+   $.ajax({
+url:'http://128.119.243.147:3300/UFOreports',
+    type: "GET",
+    dataType: 'json',
+   success: function(data,err) {
+    //    console.log(data);
+        years_list=data;
+		years_list.sort(function(a, b) {
+           return parseFloat(a._id) - parseFloat(b._id);})
+       // set here your svg properties
+                    var data = {};
+					data.type="match_counts";
+					data.message1=message;
+					data.value1=value;
+					data.message2=m2;
+					//console.log(message);
+					$.ajax({
+						type: 'POST',
+						data: (data),
+				        contentType: 'application/json',
+ 			  headers: {
+			  'Content-Type': 'application/x-www-form-urlencoded',
+                          },
+ xhrFields: {
+    withCredentials: true
+  },
+                        url: 'http://128.119.243.147:3300/UFOreports',						
+                        success: function(resp) {
+                            console.log('Getmatch stats success');
+   				console.log(JSON.stringify(resp));
+							
+							
+                            draw_Counts2_chart(message,m2,value,resp);                  
+				  },
+
+                    });
+
+         }
+    });
+                   
+  }
+  
+getMatchStats("Year",2012,"Month");
+
+function draw_Counts2_chart(m1,m2,v,experiments)
+{
+d3.select(".svg-counts2").selectAll(".lines").remove();
+	d3.select(".svg-counts2").selectAll(".circles").remove();
+	d3.select(".svg-counts2").selectAll(".bars").remove();
+	d3.select(".svg-counts2").selectAll(".label").remove();
+	d3.select(".svg-counts2").selectAll(".label-text").remove();
+
+if(m1=="Year")
+{
+draw_YearMC_chart(m2,experiments);
+}
+
+else if(m1=="Country")
+{
+if(m2=="Year")  //line-chart
+draw_CountryYear_chart(experiments);
+}
+
+else if(m1=="Shape")
+{
+if(m2=="Country-Year")
+draw_ShapeLine_chart(experiments);
+else
+draw_ShapeYC_chart(m2,experiments); //bubble chart
+}
+
+}
+
+
+
+var margin = {top: 20, right: 20, bottom: 30, left: 40},
+    width = 580 - margin.left - margin.right,
+    height = 300 - margin.top - margin.bottom;
+	
+   // Adds the svg canvas
+   var	svg2 = d3.select(".chart2")
+	.append("svg")
+	 .attr("class","svg-counts2")
+		.attr("width", width + margin.left + margin.right)
+		.attr("height", height + margin.top + margin.bottom)
+	    .append("g")
+		.attr("transform", "translate(" +margin.right+"," +margin.bottom + ")") ;
+
+		var first=1;
+	
+function draw_ShapeLine_chart(experiments)
+{
+var svgline=svg2;
+
+   years_list.sort(function(a, b) {
+    return parseFloat(a) - parseFloat(b);});
+ 	
+ 
+  var xScale= d3.scale.ordinal().rangePoints([0, width]);
+ //var xScale= d3.scale.linear().range([0, width]);
+  var yScale= d3.scale.linear().range([height, 0]);
+  var y_min=experiments['Min'];
+  var y_max=experiments['Max'];
+  
+  xScale.domain(years_list);
+  
+  yScale.domain([y_min-5,y_max+10]);
+      
+   var xAxis=d3.svg.axis().scale(xScale).orient("bottom")
+   //.tickValues([1910,1925,1935,1945,1952,1965,1975,1985,1995,2005,2012]);
+   var yAxis=d3.svg.axis().scale(yScale).orient("left").ticks(4);
+
+	var line1 = d3.svg.line()
+    .x(function(d,i){return xScale(d._id);})
+    .y(function(d) {return yScale(d.count);});
+   
+	var container=svgline.append("g").attr("class","parent-to-all");
+	 // x-axis
+	 if(first==1)
+	{
+   var x=container.append("g")
+      .attr("class", "xaxis")
+      .attr("transform", "translate(40," + height + ")")
+      .call(xAxis);
+	  
+	  x.selectAll("text")  
+            .style("text-anchor", "end")
+			.style("font-size","6px")
+            .attr("dx", ".40em")
+            .attr("dy", ".35em")
+			.attr("class","xlabel-text")
+            .attr("transform", "rotate(-45)" );
+	  
+      x.append("text")
+      .attr("class", "xlabel")
+      .attr("x", width)
+      .attr("y", -6)
+      .style("text-anchor", "end")
+      .text("Years")
+	  ; 
+  
+  // y-axis
+ var y= container.append("g")
+      .attr("class", "yaxis")
+	  .attr("transform", "translate(40,0)")
+      .call(yAxis);
+	  
+	   y.selectAll("text")  
+            .style("text-anchor", "end")
+			.attr("class","label-text")
+            .attr("transform", "rotate(-5)" );
+		   
+      y.append("text")
+      .attr("class", "label")
+      .attr("transform", "rotate(-90)")
+	  .attr("x",-10)
+      .attr("y", 5)
+	  .attr("dx",".5em")
+      .attr("dy", ".8em")
+      .style("text-anchor", "end")
+      .text("Shape reports per country")	 ;
+
+	  
+	  var legend = svgline.append("g")
+        .attr("class", "legend")
+        .attr("x", width - 25)
+        .attr("y", 25)
+        .attr("height", 100)
+        .attr("width", 100);
+
+	 var color_leg=[{"color":"orange","C":"us"},{"color":"pink","C":"ca"},{"color":"green","C":"gb"},
+	 {"color":"purple","C":"au"}];
+	 
+   var l=legend.selectAll("rect")
+   .data(color_leg).enter();
+   
+   l.append("rect")
+  .attr("x", width-25)
+  .attr("y", function(d,i){return 25+15*i;})
+  .attr("width", 10)
+  .attr("height", 10)
+  .style("fill",function(d){return d.color;});
+
+  l.append("text")
+  .attr("x",  width-15)
+  .attr("y", function(d,i){return 25+15*i;})
+  .text(function(d) { return d.C; });
+	  
+first=0;
+}
+else{
+ d3.select(".svg-counts2")
+			.select(".yaxis") // change the x axis
+		    .transition()
+            .duration(50)
+            .call(yAxis);
+		
+    // d3.selectAll(".gs").transition().attr("opacity",0);
+	d3.selectAll(".svg-counts2").selectAll(".lines").remove();
+
+}				
+
+var c=container.append("g")
+	   .attr("transform", "translate(40,0)");
+	   
+	   c.append("path")
+      .attr("class", "lines")
+	  .attr("fill", "none")
+      .attr("stroke", "orange")
+      .attr("stroke-linejoin", "round")
+      .attr("stroke-linecap", "round")
+      .attr("stroke-width", 2.5)
+	  .attr("opacity",1)  
+       .attr("d",line1(experiments["us"]));
+      
+	  c.append("path")
+      .attr("class", "lines")
+	  .attr("fill", "none")
+      .attr("stroke", "pink")
+      .attr("stroke-linejoin", "round")
+      .attr("stroke-linecap", "round")
+      .attr("stroke-width", 2.5)
+	  .attr("opacity",1)  
+       .attr("d",line1(experiments["ca"]));
+	   
+	   c.append("path")
+      .attr("class", "lines")
+	  .attr("fill", "none")
+      .attr("stroke", "green")
+      .attr("stroke-linejoin", "round")
+      .attr("stroke-linecap", "round")
+      .attr("stroke-width", 2.5)
+	  .attr("opacity",1)  
+       .attr("d",line1(experiments["gb"]));
+	   
+	  c.append("path")
+      .attr("class", "lines")
+	  .attr("fill", "none")
+      .attr("stroke", "purple")
+      .attr("stroke-linejoin", "round")
+      .attr("stroke-linecap", "round")
+      .attr("stroke-width", 2.5)
+	  .attr("opacity",1)  
+       .attr("d",line1(experiments["au"]));
+
+ 
+	  }
+
+
+
+		
+
+function draw_ShapeYC_chart(type,experiments)
+{
+
+var xScale;
+
+if(type=="Year")
+{
+experiments.sort(function(a, b) {
+    return parseFloat(a._id) - parseFloat(b._id);
+});
+
+}
+
+  var yScale= d3.scale.linear().range([height, 0]);
+  var rScale=d3.scale.linear().range([5,15]);
+  
+  if(type =="Year")
+  {
+  xScale= d3.scale.linear().range([0, width-20]);
+  xScale.domain([d3.min(experiments,function(d){return +d._id}),d3.max(experiments,function(d){return +d._id})]);
+  }
+  else if(type =="Country"){
+ 
+  xScale= d3.scale.ordinal().rangePoints([0, width-20]);
+  var dkeys=[];
+  for (exp in experiments)
+  {
+  dkeys.push(experiments[exp]._id);
+  }  
+  
+  xScale.domain(dkeys);
+  }
+  
+  yScale.domain([d3.min(experiments,function(d){return +d.count}),d3.max(experiments,function(d){return +d.count})]);
+  rScale.domain([d3.min(experiments,function(d){return +d.count}),d3.max(experiments,function(d){return +d.count})]);    
+   
+   var xAxis=d3.svg.axis().scale(xScale).orient("bottom");
+   var yAxis=d3.svg.axis().scale(yScale).orient("left").ticks(20);
+
+   
+	var container=svg2.append("g").attr("class","parent-to-all");
+	 // x-axis
+   var x=container.append("g")
+      .attr("class", "xaxis")
+      .attr("transform", "translate(40," + height + ")")
+      .call(xAxis);
+	  
+	  x.selectAll("text")  
+            .style("text-anchor", "end")
+            .attr("dx", ".8em")
+            .attr("dy", ".5em")
+			.attr("class","label-text")
+           // .attr("transform", "rotate(-5)" );
+	  
+      x.append("text")
+      .attr("class", "label")
+      .attr("x", width)
+      .attr("y", -6)
+      .style("text-anchor", "end")
+      .text(type)
+	  ; 
+  
+  // y-axis
+ var y= container.append("g")
+      .attr("class", "yaxis")
+	  .attr("transform", "translate(40,0)")
+      .call(yAxis);
+	  
+	   y.selectAll("text")  
+            .style("text-anchor", "end")
+			.attr("class","label-text")
+            .attr("transform", "rotate(-5)" );
+		   
+      y.append("text")
+      .attr("class", "label")
+      .attr("transform", "rotate(-90)")
+	  .attr("x",4)
+      .attr("y", 5)
+	  .attr("dx",".5em")
+      .attr("dy", ".8em")
+      .style("text-anchor", "end")
+      .text("Num reports")
+	 ;
+
+	  var c=container.append("g")
+	   .attr("transform", "translate(40,0)");
+	  
+       
+	    c.selectAll(".circles")
+       .data(experiments)
+       .enter()
+       .append("circle")
+	   .attr("class","circles")
+       .attr("r",function(d){return rScale(d.count);})
+       .attr("cx",function(d){return xScale(d._id);})
+       .attr("cy",function(d){return yScale(d.count);})
+ 	    .attr("fill","purple")
+		.on("click",function(d){ 
+          d3.selectAll(".circles")
+            .style("fill", function(d) { return "gold"; });                                                
+          d3.select(this)
+            .style("fill","lightcoral")
+            .style("stroke","red");		
+	
+        })
+		.on("mouseover",function(d){
+	    	 div1.transition()
+			    .duration(200)
+			    .style("opacity", .9); 
+				div1.html("<span><font face=\"verdana\">"+type+":  </font>"+d._id+"<br/>"+
+			
+						 "<font face=\"verdana\">Num Reports: </font>"+d.count+"<br/></span>")
+				.style("left", (d3.event.pageX) + "px")	
+				 .style("top", (d3.event.pageY - 28) + "px");
+				 })
+			
+	   .on("mouseout",function(d){
+			 div1.transition()
+			    .duration(200)
+			    .style("opacity", 0); 
+			
+			})		;
+	  
+	   
+      
+}
+		
+function draw_CountryYear_chart(experiments)
+{
+
+experiments.sort(function(a, b) {
+    return parseFloat(a._id) - parseFloat(b._id);
+});
+
+  var xScale= d3.scale.linear().range([0, width-20]);
+  var yScale= d3.scale.linear().range([height, 0]);
+  
+  xScale.domain([d3.min(experiments,function(d){return +d._id}),d3.max(experiments,function(d){return +d._id})]);
+  yScale.domain([d3.min(experiments,function(d){return +d.count}),d3.max(experiments,function(d){return +d.count})]);
+      
+   var xAxis=d3.svg.axis().scale(xScale).orient("bottom").ticks(10);
+   var yAxis=d3.svg.axis().scale(yScale).orient("left").ticks(20);
+
+	var line1 = d3.svg.line()
+    .x(function(d,i) { return xScale(d._id); })
+    .y(function(d) { return yScale(d.count); });
+   
+	var container=svg2.append("g").attr("class","parent-to-all");
+	 // x-axis
+   var x=container.append("g")
+      .attr("class", "xaxis")
+      .attr("transform", "translate(40," + height + ")")
+      .call(xAxis);
+	  
+	  x.selectAll("text")  
+            .style("text-anchor", "end")
+            .attr("dx", ".8em")
+            .attr("dy", ".5em")
+			.attr("class","label-text")
+           // .attr("transform", "rotate(-5)" );
+	  
+      x.append("text")
+      .attr("class", "label")
+      .attr("x", width)
+      .attr("y", -6)
+      .style("text-anchor", "end")
+      .text("Years")
+	  ; 
+  
+  // y-axis
+ var y= container.append("g")
+      .attr("class", "yaxis")
+	  .attr("transform", "translate(40,0)")
+      .call(yAxis);
+	  
+	   y.selectAll("text")  
+            .style("text-anchor", "end")
+			.attr("class","label-text")
+            .attr("transform", "rotate(-5)" );
+		   
+      y.append("text")
+      .attr("class", "label")
+      .attr("transform", "rotate(-90)")
+	  .attr("x",4)
+      .attr("y", 5)
+	  .attr("dx",".5em")
+      .attr("dy", ".8em")
+      .style("text-anchor", "end")
+      .text("UFO reports")
+	 ;
+
+	  var c=container.append("g")
+	   .attr("transform", "translate(40,0)");
+	    
+	   c.append("path")
+      .attr("class", "lines")
+	  .attr("fill", "none")
+      .attr("stroke", "steelblue")
+      .attr("stroke-linejoin", "round")
+      .attr("stroke-linecap", "round")
+      .attr("stroke-width", 2.5)
+	  .attr("opacity",1)  
+       .attr("d",line1(experiments));
+      
+}	
+	
+function draw_YearMC_chart(type,experiments)
+{ 
+if(type=="Month")
+{   experiments.sort(function(a, b) {
+       return parseFloat(a._id) - parseFloat(b._id);
+                  });
+}
+							 
+  var yScale2= d3.scale.ordinal().rangePoints([height,0]);
+  var xScale2= d3.scale.linear().range([0, width-20]);
+  console.log(JSON.stringify(experiments));
+  
+  var dkeys=[];
+  for (exp in experiments)
+  {
+  dkeys.push(experiments[exp]._id);
+  }
+   
+  yScale2.domain(dkeys);
+  xScale2.domain([-10,d3.max(experiments,function(d){return +d.count})]);
+    
+   var xAxis2=d3.svg.axis().scale(xScale2).orient("bottom").ticks(10);
+   var yAxis2=d3.svg.axis().scale(yScale2).orient("left").ticks(dkeys.length);
+
+	var container=svg2.append("g").attr("class","parent-to-all");
+	 
+	 // x-axis
+   var x=container.append("g")
+      .attr("class", "xaxis")
+      .attr("transform", "translate(40," + height + ")")
+      .call(xAxis2);
+	  
+	  x.selectAll("text")  
+            .style("text-anchor", "end")
+            .attr("dx", ".8em")
+            .attr("dy", ".5em")
+			.attr("class","label-text")
+           // .attr("transform", "rotate(-5)" );
+	  
+      x.append("text")
+      .attr("class", "label")
+      .attr("x", width)
+      .attr("y", -6)
+      .style("text-anchor", "end")
+      .text("UFO reports")
+	  ; 
+  
+  // y-axis
+ var y= container.append("g")
+      .attr("class", "yaxis")
+	  .attr("transform", "translate(40,0)")
+      .call(yAxis2);
+	  
+	   y.selectAll("text")  
+            .style("text-anchor", "end")
+			.attr("class","label-text")
+			.attr("dy", ".15em")
+			.attr("font-size","12px")
+            .attr("transform", "rotate(-5)" );
+		   
+      y.append("text")
+      .attr("class", "label")
+      .attr("transform", "rotate(-90)")
+	  .attr("x",4)
+      .attr("y", 5)
+	  .attr("dx","-.50em")
+      .attr("dy", ".80em")
+      .style("text-anchor", "end")
+      .text(type)
+	 ;
+
+var bars=container.append("g")
+	     .attr("transform", "translate(40,0)")  
+         .selectAll(".gs")
+         .data(experiments)
+         .enter()
+		 .append("g").attr("class","gs");
+		 
+    bars.selectAll(".bars")
+	     .data(experiments)
+		 .enter()
+	    .append("rect")
+	    .attr("class", "bars") 
+	    .attr("x",0)
+		.attr("y",function(d){ return yScale2(d._id)})
+        .attr("width",function(d){ return xScale2(d.count);})
+		.attr("height",4) 
+	     .style("fill","steelblue")
+		 .on("mouseover",function(d){
+	    	 div2.transition()
+			    .duration(200)
+			    .style("opacity", .9); 
+				div2.html("<span><font face=\"verdana\">"+type+":  </font>"+d._id+"<br/>"+
+		      		 "<font face=\"verdana\">Num Reports: </font>"+d.count+"<br/></span>")
+				.style("left", (d3.event.pageX) + "px")	
+				 .style("top", (d3.event.pageY - 28) + "px");
+				 })
+			
+	   .on("mouseout",function(d){
+			 div2.transition()
+			    .duration(200)
+			    .style("opacity", 0); 
+			
+			})		;
+	 
+	 
+}
+ 
+
+		
+		
+</script>
+
+</body>
+</html>
